@@ -35,4 +35,14 @@ public class Cliente extends Persona{
     public String getCuentaBancaria(){
         return cuentaBancaria;
     }
+
+    public void setTipoMembresia(String tipoMembresia) {
+        this.tipoMembresia = tipoMembresia;
+    }
+
+    public void setCuentaBancaria(String cuentaBancaria) {
+        this.cuentaBancaria = cuentaBancaria;
+    }
+    
+    
 }

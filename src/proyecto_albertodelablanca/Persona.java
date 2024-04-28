@@ -56,6 +56,10 @@ public abstract class Persona {
     public int getTelefono(){
         return telefono;
     }
+
+    public void setTelefono(int telefono) {
+        this.telefono = telefono;
+    }
     
     
 }
