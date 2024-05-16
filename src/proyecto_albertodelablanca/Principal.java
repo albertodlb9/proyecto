@@ -21,7 +21,7 @@ public class Principal {
     
     public static void menu(){
         
-        System.out.println("Bienvenido al sistema de gestion del gimnasio" + 0);
+        System.out.println("Bienvenido al sistema de gestion del gimnasio");
         int opcion = 0;
         do{
             System.out.println("-----------------MENU-----------------");
