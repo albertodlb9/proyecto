@@ -2,19 +2,26 @@ package proyecto_albertodelablanca;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 /**
  * 
  * @author Alberto
  */
 public class Principal {
     
-    private static Gimnasio gimnasio;
-    private static CalendarioClases calendario;
-    private static Scanner sc;
+    private static Scanner sc = new Scanner(System.in).useDelimiter("\n");
+    private static Connection conexion = Conexion.getConexion();
+    private static UsuarioDAO usuarioDAO = new UsuarioDAO(conexion);
     
     public static void main(String[] args) {
         
-        creacionGimnasio();
+        primeraConexion();
+        
         menu();
     }
     
@@ -73,18 +80,53 @@ public class Principal {
         }while(opcion != 6);
     }
     
-    public static void creacionGimnasio(){
-        gimnasio = new Gimnasio();
-        actualizacionGimnasio();
-        
-        if(gimnasio.getNombre().equals("")){
-            System.out.print("Introduzca el nombre de su gimnasio: ");
-            gimnasio.setNombre(sc.nextLine());
+    private static void primeraConexion(){
+        try{
+            ArrayList<Usuario> usuarios = usuarioDAO.extraerUsuarios();
+            if(usuarios.isEmpty()){
+                System.out.println("Bienvenido al programa de gestion de gimnasios.");
+                System.out.println("Al no haber ninguna cuenta registrada debera crear una cuenta de administrador.");
+                
+            }
+        }
+        catch(SQLException e){
+            System.err.println(e.getMessage());
         }
     }
     
-    public static void actualizacionGimnasio(){
-        //metodo para leer los datos del archivo y actualizar el gimnasio
+    private static void crearCuenta(String tipo){
+        try{
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            
+            System.out.println("Introduzca a continuacion sus datos personales:");
+            System.out.print("DNI: ");
+            String dni = sc.next();
+            System.out.print("Nombre: ");
+            String nombre = sc.next();
+            System.out.print("Apellidos: ");
+            String apellidos = sc.next();
+            System.out.print("Email: ");
+            String email = sc.next();
+            System.out.print("Fecha de nacimiento (yyyy/mm/dd): ");
+            String fechaNacimiento = sc.next();
+            System.out.print("Sexo (M/F): ");
+            String sexo = sc.next();
+            System.out.print("Telefono: ");
+            int telefono = sc.nextInt();
+            System.out.print("Direccion: ");
+            String direccion = sc.next();
+            System.out.print("Numero de cuenta bancaria: ");
+            String cuentaBancaria = sc.next();
+            
+            Usuario nuevoUsuario = new Usuario(dni,nombre,apellidos,email,LocalDate.parse(fechaNacimiento,formatter),sexo,telefono,direccion,cuentaBancaria,tipo);
+            usuarioDAO.crearUsuario(nuevoUsuario);
+        }
+        catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        catch(InputMismatchException e){
+            System.err.println(e.getMessage());
+        }
     }
 
 }
