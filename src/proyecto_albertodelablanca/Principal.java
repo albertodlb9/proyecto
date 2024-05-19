@@ -1,5 +1,6 @@
 package proyecto_albertodelablanca;
 
+import java.io.File;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.sql.Connection;
@@ -34,9 +35,10 @@ public class Principal {
             System.out.println("-----------------MENU-----------------");
             System.out.println("1. Mostrar la informacion de un cliente");
             System.out.println("2. Mostrar la informacion de todos los clientes");
-            System.out.println("3. Menu de gestion de clases");
-            System.out.println("4. Actualizar informacion del usuario");
-            System.out.println("5. Cerrar sesion");
+            System.out.println("3. Dar de baja un cliente");
+            System.out.println("4. Menu de gestion de clases");
+            System.out.println("5. Actualizar informacion del usuario");
+            System.out.println("6. Cerrar sesion");
             try{
                 System.out.print("Introduzca la opcion: ");
                 opcion = sc.nextInt();
@@ -51,14 +53,18 @@ public class Principal {
                         break;
                     }
                     case 3:{
-                        menuClases();
+                        eliminarCliente(usuario);
                         break;
                     }
                     case 4:{
-                        actualizarUsuario(usuario);
+                        menuClases();
                         break;
                     }
                     case 5:{
+                        actualizarUsuario(usuario);
+                        break;
+                    }
+                    case 6:{
                         break;
                     }
                     default :{
@@ -69,7 +75,7 @@ public class Principal {
                 System.err.println("Error: la opcion introducida es incorrecto");
             }
             
-        }while(opcion != 5);
+        }while(opcion != 6);
     }
     
     private static void menuUsuario(Usuario usuario){
@@ -301,6 +307,29 @@ public class Principal {
         }
         catch(SQLException e){
             System.err.println(e.getMessage());
+        }
+    }
+    
+    private static void eliminarCliente(Usuario usuario){
+        if(usuario.getTipo().equals("admin")){
+            try{
+                System.out.print("Introduzca el dni del cliente: ");
+                String dni = sc.next();
+                usuarioDAO.eliminarUsuario(dni);
+            }
+            catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+            catch(NullPointerException e){
+                System.err.println(e.getMessage());
+            }
+        }else{
+            try{
+                usuarioDAO.eliminarUsuario(usuario.getDni());
+            }
+            catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
         }
     }
 }
