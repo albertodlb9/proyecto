@@ -19,8 +19,10 @@ public class Usuario {
     private String cuentaBancaria;
     private String tipo;
     private String direccion;
+    private String nickname;
+    private String password;
 
-    public Usuario(String dni, String nombre, String apellidos, String email, LocalDate fechaNacimiento, String sexo, int telefono, String direccion, String cuentaBancaria, String tipo) {
+    public Usuario(String dni, String nombre, String apellidos, String email, LocalDate fechaNacimiento, String sexo, int telefono, String direccion, String cuentaBancaria, String tipo, String nickname, String password) {
         this.dni = dni;
         this.nombre = nombre;
         this.apellidos = apellidos;
@@ -31,6 +33,8 @@ public class Usuario {
         this.direccion = direccion;
         this.cuentaBancaria = cuentaBancaria;
         this.tipo = tipo;
+        this.nickname = nickname;
+        this.password = password;
     }
     
     public Usuario(){
@@ -116,7 +120,21 @@ public class Usuario {
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
-    
-    
-    
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+  
 }

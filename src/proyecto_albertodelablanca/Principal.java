@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 /**
  * 
@@ -18,53 +19,43 @@ public class Principal {
     private static Connection conexion = Conexion.getConexion();
     private static UsuarioDAO usuarioDAO = new UsuarioDAO(conexion);
     
-    public static void main(String[] args) {
-        
+    public static void main(String[] args) {  
         primeraConexion();
-        
-        menu();
+        login();  
     }
     
-    
-    public static void menu(){
+    public static void menuAdmin(){
         
-        System.out.println("Bienvenido al sistema de gestion del gimnasio" + 0);
+        System.out.println("Bienvenido al sistema de gestion del gimnasio");
         int opcion = 0;
         do{
             System.out.println("-----------------MENU-----------------");
-            System.out.println("1. Añadir cliente");
-            System.out.println("2. Dar de baja cliente");
-            System.out.println("3. Modificar datos de un cliente");
-            System.out.println("4. Mostrar clientes");
-            System.out.println("5. Menu gestion de clases");
-            System.out.println("6. Guardar y salir");
-            System.out.print("Elija su opcion: ");
+            System.out.println("1. Mostrar la informacion de un cliente");
+            System.out.println("2. Mostrar la informacion de todos los clientes");
+            System.out.println("3. Menu de gestion de clases");
+            System.out.println("4. Actualizar informacion del usuario");
+            System.out.println("4. Salir");
             try{
                 opcion = sc.nextInt();
 
                 switch(opcion){
                     case 1:{
-                        //añadirCliente();
+                        //buscarCliente();
                         break;
                     }
                     case 2:{
-                        //eliminarCliente();
-                        break;
-                    }
-                    case 3:{
-                        //modificarCliente();
-                        break;
-                    }
-                    case 4:{
                         //mostrarClientes();
                         break;
                     }
-                    case 5:{
+                    case 3:{
                         //menuClases();
                         break;
                     }
-                    case 6:{
-                        //guardarCambios();
+                    case 4:{
+                        //actualizarUsuario();
+                        break;
+                    }
+                    case 5:{
                         System.out.println("Guardando cambios...");
                         System.out.println("Saliendo del programa. Hasta luego!");
                         break;
@@ -77,7 +68,11 @@ public class Principal {
                 System.err.println("Error: la opcion introducida es incorrecto");
             }
             
-        }while(opcion != 6);
+        }while(opcion != 5);
+    }
+    
+    private static void menuUsuario(){
+        
     }
     
     private static void primeraConexion(){
@@ -86,7 +81,7 @@ public class Principal {
             if(usuarios.isEmpty()){
                 System.out.println("Bienvenido al programa de gestion de gimnasios.");
                 System.out.println("Al no haber ninguna cuenta registrada debera crear una cuenta de administrador.");
-                
+                crearCuenta("admin");
             }
         }
         catch(SQLException e){
@@ -107,7 +102,7 @@ public class Principal {
             String apellidos = sc.next();
             System.out.print("Email: ");
             String email = sc.next();
-            System.out.print("Fecha de nacimiento (yyyy/mm/dd): ");
+            System.out.print("Fecha de nacimiento (dd/mm/yyyy): ");
             String fechaNacimiento = sc.next();
             System.out.print("Sexo (M/F): ");
             String sexo = sc.next();
@@ -117,8 +112,25 @@ public class Principal {
             String direccion = sc.next();
             System.out.print("Numero de cuenta bancaria: ");
             String cuentaBancaria = sc.next();
+            System.out.print("Nombre de usuario: ");
+            String nickname = sc.next();
             
-            Usuario nuevoUsuario = new Usuario(dni,nombre,apellidos,email,LocalDate.parse(fechaNacimiento,formatter),sexo,telefono,direccion,cuentaBancaria,tipo);
+            boolean salida = true;
+            String password;
+            do{
+                System.out.print("Introduzca su contraseña: ");
+                password = sc.next();
+                System.out.print("Introduzca de nuevo su contraseña: ");
+                String password2 = sc.next();
+                if(password.equals(password2)){
+                    salida = false;
+                } else{
+                    System.err.println("Las contraseñas no coinciden. Intentelo de nuevo");
+                }
+            } while(salida);
+            
+            
+            Usuario nuevoUsuario = new Usuario(dni,nombre,apellidos,email,LocalDate.parse(fechaNacimiento,formatter),sexo,telefono,direccion,cuentaBancaria,tipo,nickname,password);
             usuarioDAO.crearUsuario(nuevoUsuario);
         }
         catch(SQLException e){
@@ -127,6 +139,34 @@ public class Principal {
         catch(InputMismatchException e){
             System.err.println(e.getMessage());
         }
+        catch(DateTimeParseException e){
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    private static void login(){
+        boolean salida = true;
+        do{
+            try{
+                System.out.println("***************************************");
+                System.out.println("Bienvenido");
+                System.out.print("Nickname: ");
+                String nickname = sc.next();
+                System.out.print("Password: ");
+                String password = sc.next();
+                Usuario usuario = usuarioDAO.obtenerUsuarioPorNickname(nickname);
+                
+                if(usuario.getTipo().equals("admin")){
+                    menuAdmin();
+                } else{
+                    menuUsuario();
+                }
+                salida = false;
+            }
+            catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+        } while(salida);
     }
 
 }
