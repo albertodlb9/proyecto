@@ -24,11 +24,12 @@ public class Principal {
         menuInicial();  
     }
     
-    public static void menuAdmin(){
-        
-        System.out.println("Bienvenido al sistema de gestion del gimnasio");
+    public static void menuAdmin(Usuario usuario){
+        System.out.println("********************************");
+        System.out.println("Bienvenido " + usuario.getNombre() + " " + usuario.getApellidos() + " al sistema de gestion del gimnasio");
         int opcion = 0;
         do{
+            System.out.println("********************************");
             System.out.println("-----------------MENU-----------------");
             System.out.println("1. Mostrar la informacion de un cliente");
             System.out.println("2. Mostrar la informacion de todos los clientes");
@@ -41,7 +42,7 @@ public class Principal {
 
                 switch(opcion){
                     case 1:{
-                        //buscarCliente();
+                        buscarCliente();
                         break;
                     }
                     case 2:{
@@ -58,7 +59,6 @@ public class Principal {
                     }
                     case 5:{
                         System.out.println("Guardando cambios...");
-                        System.out.println("Saliendo del programa. Hasta luego!");
                         break;
                     }
                     default :{
@@ -72,8 +72,9 @@ public class Principal {
         }while(opcion != 5);
     }
     
-    private static void menuUsuario(){
-        
+    private static void menuUsuario(Usuario usuario){
+        System.out.println("********************************");
+        System.out.println("Bienvenido " + usuario.getNombre() + " " + usuario.getApellidos() + "!");
     }
     
     private static void menuClases(){
@@ -197,9 +198,9 @@ public class Principal {
                     Usuario usuario = usuarioDAO.obtenerUsuarioPorNickname(nickname);
 
                     if(usuario.getTipo().equals("admin")){
-                        menuAdmin();
+                        menuAdmin(usuario);
                     } else{
-                        menuUsuario();
+                        menuUsuario(usuario);
                     }
                     salida = false;
                 } else{
@@ -237,6 +238,21 @@ public class Principal {
                 System.err.println("El login es incorrecto");
             }
         } while(salida);
+    }
+    
+    private static void buscarCliente(){
+        try{
+            System.out.print("Introduzca el dni del cliente: ");
+            String dni = sc.next();
+            Usuario usuario = usuarioDAO.obtenerUsuarioPorDni(dni);
+            System.out.println(usuario.toString());
+        }
+        catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        catch(NullPointerException e){
+            System.out.println("No se ha encontrado ningun cliente con ese dni");
+        }
     }
 
 }

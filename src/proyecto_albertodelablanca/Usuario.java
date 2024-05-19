@@ -136,5 +136,9 @@ public class Usuario {
     public void setPassword(String password) {
         this.password = password;
     }
-  
+
+    @Override
+    public String toString() {
+        return "*****************************\n*DNI: " + this.getDni() + "\n*Nombre: " + this.getNombre() + "\n*Apellidos: " + this.getApellidos() + "\n*Email: " + this.getEmail() + "\n*Fecha de nacimiento: " + this.getFechaNacimiento().toString() + "\n*Sexo: " + this.getSexo() + "\n*Direccion: " + this.getDireccion() + "\n*Telefono: " + this.getTelefono() + "\n*Numero de cuenta: " + this.getCuentaBancaria() + "\n*Nickname: " + this.getNickname() + "\n*Password: " + this.getPassword();
+    } 
 }
