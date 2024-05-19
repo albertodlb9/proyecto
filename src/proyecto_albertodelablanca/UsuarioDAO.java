@@ -58,8 +58,8 @@ public class UsuarioDAO {
             statement.setString(8,usuario.getSexo());
             statement.setString(9, usuario.getCuentaBancaria());
             statement.setString(10, usuario.getTipo());
-            statement.setString(10, usuario.getNickname());
-            statement.setString(11, usuario.getPassword());
+            statement.setString(11, usuario.getNickname());
+            statement.setString(12, usuario.getPassword());
             statement.executeUpdate();
             System.out.println("Usuario creado exitosamente en la base de datos.");
         }

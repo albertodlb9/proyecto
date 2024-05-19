@@ -34,8 +34,9 @@ public class Principal {
             System.out.println("2. Mostrar la informacion de todos los clientes");
             System.out.println("3. Menu de gestion de clases");
             System.out.println("4. Actualizar informacion del usuario");
-            System.out.println("4. Salir");
+            System.out.println("5. Salir");
             try{
+                System.out.print("Introduzca la opcion: ");
                 opcion = sc.nextInt();
 
                 switch(opcion){
