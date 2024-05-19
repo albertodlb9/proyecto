@@ -21,7 +21,7 @@ public class Principal {
     
     public static void main(String[] args) {  
         primeraConexion();
-        login();  
+        menuInicial();  
     }
     
     public static void menuAdmin(){
@@ -49,7 +49,7 @@ public class Principal {
                         break;
                     }
                     case 3:{
-                        //menuClases();
+                        menuClases();
                         break;
                     }
                     case 4:{
@@ -73,6 +73,10 @@ public class Principal {
     }
     
     private static void menuUsuario(){
+        
+    }
+    
+    private static void menuClases(){
         
     }
     
@@ -145,27 +149,92 @@ public class Principal {
         }
     }
     
+    private static void menuInicial(){
+       
+        int opcion;
+        do{
+            System.out.println("***************************************");
+            System.out.println("Bienvenido");
+            System.out.println("1. Iniciar sesion");
+            System.out.println("2. Registrar nuevo usuario");
+            System.out.println("3. Salir del programa");
+            System.out.print("Introduzca una opcion: ");
+            opcion = sc.nextInt();
+            
+            switch(opcion){
+                case 1:{
+                   login();
+                   break;
+                }
+                case 2:{
+                    crearCuenta("cliente");
+                    break;
+                }
+                case 3:{
+                    System.out.println("Hasta luego!");
+                    break;
+                }
+                default:{
+                    System.out.println("La opcion introducida es incorrecta");
+                }
+            }
+        }while(opcion != 3);  
+    }
+    
     private static void login(){
-        boolean salida = true;
+         boolean salida = true;
+         int contador = 0;
         do{
             try{
                 System.out.println("***************************************");
-                System.out.println("Bienvenido");
-                System.out.print("Nickname: ");
-                String nickname = sc.next();
-                System.out.print("Password: ");
-                String password = sc.next();
-                Usuario usuario = usuarioDAO.obtenerUsuarioPorNickname(nickname);
-                
-                if(usuario.getTipo().equals("admin")){
-                    menuAdmin();
+                if(contador < 3){
+                    System.out.print("Nickname: ");
+                    String nickname = sc.next();
+                    System.out.print("Password: ");
+                    String password = sc.next();
+                    contador++;
+
+                    Usuario usuario = usuarioDAO.obtenerUsuarioPorNickname(nickname);
+
+                    if(usuario.getTipo().equals("admin")){
+                        menuAdmin();
+                    } else{
+                        menuUsuario();
+                    }
+                    salida = false;
                 } else{
-                    menuUsuario();
+                    int opcion;
+                    do{
+                        System.out.println("Ha fallado en el login varias veces");
+                        System.out.println("1. Intentarlo de nuevo");
+                        System.out.println("2. Volver al menu anterior");
+                        System.out.print("Introduzca su opcion: ");
+                        opcion = sc.nextInt();
+                        
+                        switch(opcion){
+                            case 1:{
+                                contador =0;
+                                break;
+                            }
+                            case 2:{
+                                menuInicial();
+                                salida = false;
+                                break;
+                            }
+                            default:{
+                                System.out.println("Opcion introducida incorrecta");
+                                salida = false;
+                            }
+                        }
+                        
+                    }while(opcion != 1 && opcion != 2);
                 }
-                salida = false;
             }
             catch(SQLException e){
                 System.err.println(e.getMessage());
+            }
+            catch(NullPointerException e){
+                System.err.println("El login es incorrecto");
             }
         } while(salida);
     }
