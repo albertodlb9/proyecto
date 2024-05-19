@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
+import javax.activation.DataHandler;
 /**
  * 
  * @author Alberto
@@ -164,7 +166,8 @@ public class Principal {
             System.out.println("Bienvenido");
             System.out.println("1. Iniciar sesion");
             System.out.println("2. Registrar nuevo usuario");
-            System.out.println("3. Salir del programa");
+            System.out.println("3. Ha olvidado su contraseña?");
+            System.out.println("4. Salir del programa");
             System.out.print("Introduzca una opcion: ");
             opcion = sc.nextInt();
             
@@ -178,6 +181,10 @@ public class Principal {
                     break;
                 }
                 case 3:{
+                    recuperarPassword();
+                    break;
+                }
+                case 4:{
                     System.out.println("Hasta luego!");
                     break;
                 }
@@ -185,7 +192,7 @@ public class Principal {
                     System.out.println("La opcion introducida es incorrecta");
                 }
             }
-        }while(opcion != 3);  
+        }while(opcion != 4);  
     }
     
     private static void login(){
@@ -330,6 +337,47 @@ public class Principal {
             catch(SQLException e){
                 System.err.println(e.getMessage());
             }
+        }
+    }
+    
+    private static void recuperarPassword(){
+        System.out.println("*****************************");
+        System.out.print("Introduzca su nickname: ");
+        String nickname = sc.next();
+        try{
+            Usuario usuario = usuarioDAO.obtenerUsuarioPorNickname(nickname);
+            String email = usuario.getEmail();
+            Random random = new Random();
+            String letrasMayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            String letrasMinusculas = "abcdefghijklmnopqrstuvwxyz";
+            String digitos = "0123456789";
+            String password = "";
+            for(int i = 0; i < 12; i++){
+                switch(random.nextInt(3)){
+                    case 0:{
+                        password += letrasMayusculas.charAt(random.nextInt(letrasMayusculas.length()));
+                        break;
+                    }
+                    case 1:{
+                        password += letrasMinusculas.charAt(random.nextInt(letrasMinusculas.length()));
+                        break;
+                    }
+                    case 2:{
+                        password += digitos.charAt(random.nextInt(digitos.length()));
+                        break;
+                    }
+                }
+            }
+            usuario.setPassword(password);
+            usuarioDAO.actualizarUsuario(usuario);
+            Email.enviarConGMail(email, "Recuperar contraseña", "Su nueva contraseña es: " + password);
+            System.out.println("Se ha enviado la nueva contraseña al correo " + usuario.getEmail());
+        }
+        catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        catch(NullPointerException e){
+            System.err.println("No se ha encontrado el nickname");
         }
     }
 }
