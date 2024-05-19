@@ -35,7 +35,7 @@ public class Principal {
             System.out.println("2. Mostrar la informacion de todos los clientes");
             System.out.println("3. Menu de gestion de clases");
             System.out.println("4. Actualizar informacion del usuario");
-            System.out.println("5. Salir");
+            System.out.println("5. Cerrar sesion");
             try{
                 System.out.print("Introduzca la opcion: ");
                 opcion = sc.nextInt();
@@ -196,13 +196,16 @@ public class Principal {
                     contador++;
 
                     Usuario usuario = usuarioDAO.obtenerUsuarioPorNickname(nickname);
-
-                    if(usuario.getTipo().equals("admin")){
-                        menuAdmin(usuario);
+                    if(password.equals(usuario.getPassword())){
+                        if(usuario.getTipo().equals("admin")){
+                            menuAdmin(usuario);
+                        } else{
+                            menuUsuario(usuario);
+                        }
+                         salida = false;
                     } else{
-                        menuUsuario(usuario);
-                    }
-                    salida = false;
+                        System.err.println("Password incorrecto");
+                    }   
                 } else{
                     int opcion;
                     do{
@@ -235,7 +238,7 @@ public class Principal {
                 System.err.println(e.getMessage());
             }
             catch(NullPointerException e){
-                System.err.println("El login es incorrecto");
+                System.err.println("El nickname es incorrecto es incorrecto");
             }
         } while(salida);
     }
