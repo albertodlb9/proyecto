@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 /**
  * 
  * @author Alberto
@@ -46,7 +47,7 @@ public class Principal {
                         break;
                     }
                     case 2:{
-                        //mostrarClientes();
+                        mostrarClientes();
                         break;
                     }
                     case 3:{
@@ -54,11 +55,10 @@ public class Principal {
                         break;
                     }
                     case 4:{
-                        //actualizarUsuario();
+                        actualizarUsuario(usuario);
                         break;
                     }
                     case 5:{
-                        System.out.println("Guardando cambios...");
                         break;
                     }
                     default :{
@@ -257,5 +257,50 @@ public class Principal {
             System.out.println("No se ha encontrado ningun cliente con ese dni");
         }
     }
+    
+    private static void mostrarClientes(){
+        try{
+            ArrayList<Usuario> usuarios = usuarioDAO.extraerUsuarios();
+            Iterator <Usuario> it = usuarios.iterator();
+            
+            while(it.hasNext()){
+                Usuario usuario = it.next();
+                System.out.println(usuario.toString());
+                System.out.println("*****************************");
+            }
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    private static void actualizarUsuario(Usuario usuario){
+        try{
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+            System.out.println("Introduzca a continuacion sus datos para actualizar:");
+            System.out.print("Nombre: ");
+            String nombre = sc.next();
+            System.out.print("Apellidos: ");
+            String apellidos = sc.next();
+            System.out.print("Email: ");
+            String email = sc.next();
+            System.out.print("Fecha de nacimiento (dd/mm/yyyy): ");
+            String fechaNacimiento = sc.next();
+            System.out.print("Sexo (M/F): ");
+            String sexo = sc.next();
+            System.out.print("Telefono: ");
+            int telefono = sc.nextInt();
+            System.out.print("Direccion: ");
+            String direccion = sc.next();
+            System.out.print("Numero de cuenta bancaria: ");
+            String cuentaBancaria = sc.next();
+
+            Usuario usuarioActualizado = new Usuario(usuario.getDni(),nombre,apellidos,email,LocalDate.parse(fechaNacimiento,formatter),sexo,telefono,direccion,cuentaBancaria,usuario.getTipo(),usuario.getNickname(),usuario.getPassword());
+            usuarioDAO.actualizarUsuario(usuarioActualizado);
+        }
+        catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+    }
 }
