@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Principal {
     private static Scanner sc = new Scanner(System.in).useDelimiter("\n");
     private static Connection conexion = Conexion.getConexion();
     private static UsuarioDAO usuarioDAO = new UsuarioDAO(conexion);
+    private static Calendario calendario = new Calendario();
     
     public static void main(String[] args) {  
         primeraConexion();
@@ -59,7 +61,7 @@ public class Principal {
                         break;
                     }
                     case 4:{
-                        menuClases();
+                        menuClasesAdmin();
                         break;
                     }
                     case 5:{
@@ -85,22 +87,84 @@ public class Principal {
         System.out.println("Bienvenido " + usuario.getNombre() + " " + usuario.getApellidos() + "!");
     }
     
-    private static void menuClases(){
-        
+    private static void menuClasesAdmin(){
+        int opcion;
+        do{           
+            System.out.println("1. Mostrar clases de esta semana");
+            System.out.println("2. Añadir una clase");
+            System.out.println("3. Eliminar una clase");
+            System.out.println("4. Salir");
+            System.out.print("Introduzca la opcion: ");
+            opcion = sc.nextInt();
+            
+            switch(opcion){
+                case 1:{
+                    //mostrarClases();
+                    break;
+                }
+                case 2:{
+                    //incluirClase();
+                    break;
+                }
+                case 3:{
+                    //eliminarClase();
+                    break;
+                }
+                case 4:{
+                    
+                }
+                default:{
+                    System.err.println("La opcion introducida es incorrecta");
+                    break;
+                }
+            }
+        }while(opcion != 4);
     }
     
     private static void primeraConexion(){
-        try{
-            ArrayList<Usuario> usuarios = usuarioDAO.extraerUsuarios();
-            if(usuarios.isEmpty()){
-                System.out.println("Bienvenido al programa de gestion de gimnasios.");
-                System.out.println("Al no haber ninguna cuenta registrada debera crear una cuenta de administrador.");
-                crearCuenta("admin");
+        boolean comprobacion = false;
+        do{
+            try{
+                ArrayList<Usuario> usuarios = usuarioDAO.extraerUsuarios();
+                if(usuarios.isEmpty()){
+                    System.out.println("Bienvenido al programa de gestion de gimnasios.");
+                    System.out.println("Al no haber ninguna cuenta registrada debera crear una cuenta de administrador.");
+                    crearCuenta("admin");
+                    comprobacion = true;
+                }             
             }
-        }
-        catch(SQLException e){
+            catch(SQLException e){
             System.err.println(e.getMessage());
-        }
+            }
+        }while(!comprobacion);
+        do{
+            try{
+                comprobacion = false;
+                System.out.println("A continuacion debe establecer el horario del gimnasio");
+                String[] semana = {
+                    "Lunes",    // Monday
+                    "Martes",   // Tuesday
+                    "Miércoles",// Wednesday
+                    "Jueves",   // Thursday
+                    "Viernes",  // Friday
+                    "Sábado",   // Saturday
+                    "Domingo"   // Sunday
+                };
+                for(int i = 0; i < calendario.getDias().length; i++){
+                    System.out.print(semana[i] + " apertura (hh:mm): ");
+                    String apertura = sc.next();
+                    System.out.print(semana[i] + " cierre (hh:mm): ");
+                    String cierre = sc.next();
+                    
+                    calendario.getDias()[i].setHoraApertura(LocalTime.parse(apertura+":00"));
+                    calendario.getDias()[i].setHoraCierre(LocalTime.parse(cierre+":00"));
+                }
+                //incluir en base de datos
+            }
+            catch(SQLException e){
+                System.out.println(e.getMessage());
+            }
+        }while(!comprobacion);
     }
     
     private static void crearCuenta(String tipo){
