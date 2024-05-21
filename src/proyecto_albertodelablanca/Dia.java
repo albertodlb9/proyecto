@@ -43,6 +43,14 @@ public class Dia {
     public void setHoraCierre(LocalTime horaCierre) {
         this.horaCierre = horaCierre;
     }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
     
     public void addClase(ClaseDia clase){
         int contador = 0;

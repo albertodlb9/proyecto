@@ -24,6 +24,7 @@ public class Principal {
     private static Connection conexion = Conexion.getConexion();
     private static UsuarioDAO usuarioDAO = new UsuarioDAO(conexion);
     private static Calendario calendario = new Calendario();
+    private static DiaDAO diaDAO = new DiaDAO(conexion);
     
     public static void main(String[] args) {  
         primeraConexion();
@@ -129,9 +130,9 @@ public class Principal {
                 if(usuarios.isEmpty()){
                     System.out.println("Bienvenido al programa de gestion de gimnasios.");
                     System.out.println("Al no haber ninguna cuenta registrada debera crear una cuenta de administrador.");
-                    crearCuenta("admin");
-                    comprobacion = true;
-                }             
+                    crearCuenta("admin");   
+                } 
+                comprobacion = true;
             }
             catch(SQLException e){
             System.err.println(e.getMessage());
@@ -140,26 +141,8 @@ public class Principal {
         do{
             try{
                 comprobacion = false;
-                System.out.println("A continuacion debe establecer el horario del gimnasio");
-                String[] semana = {
-                    "Lunes",    // Monday
-                    "Martes",   // Tuesday
-                    "Miércoles",// Wednesday
-                    "Jueves",   // Thursday
-                    "Viernes",  // Friday
-                    "Sábado",   // Saturday
-                    "Domingo"   // Sunday
-                };
-                for(int i = 0; i < calendario.getDias().length; i++){
-                    System.out.print(semana[i] + " apertura (hh:mm): ");
-                    String apertura = sc.next();
-                    System.out.print(semana[i] + " cierre (hh:mm): ");
-                    String cierre = sc.next();
-                    
-                    calendario.getDias()[i].setHoraApertura(LocalTime.parse(apertura+":00"));
-                    calendario.getDias()[i].setHoraCierre(LocalTime.parse(cierre+":00"));
-                }
-                //incluir en base de datos
+                establecerHorario();
+                comprobacion = true;
             }
             catch(SQLException e){
                 System.out.println(e.getMessage());
@@ -442,6 +425,24 @@ public class Principal {
         }
         catch(NullPointerException e){
             System.err.println("No se ha encontrado el nickname");
+        }
+    }
+    
+    private static void establecerHorario() throws SQLException{
+        ArrayList<Usuario> usuarios = usuarioDAO.extraerUsuarios();
+        if(usuarios.isEmpty()){
+            System.out.println("A continuacion debe establecer el horario del gimnasio");
+            String[] semana = {"Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo" };
+            for(int i = 0; i < calendario.getDias().length; i++){
+                System.out.print(semana[i] + " apertura (hh:mm): ");
+                String apertura = sc.next();
+                System.out.print(semana[i] + " cierre (hh:mm): ");
+                String cierre = sc.next();
+
+                calendario.getDias()[i].setHoraApertura(LocalTime.parse(apertura+":00"));
+                calendario.getDias()[i].setHoraCierre(LocalTime.parse(cierre+":00"));
+                diaDAO.añadirDia(calendario.getDias()[i]);
+            }
         }
     }
 }
