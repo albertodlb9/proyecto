@@ -7,13 +7,13 @@ package proyecto_albertodelablanca;
  */
 
 import java.sql.*;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class DiaDAO {
     
     private static Connection conexion;
     private static ClaseDAO claseDAO = new ClaseDAO(conexion); 
+    private static CalendarioDAO calendarioDAO = new CalendarioDAO(conexion);
     
     public DiaDAO(Connection conexion){
         this.conexion = conexion;
@@ -28,25 +28,19 @@ public class DiaDAO {
         statement.executeUpdate();
     }
     
-    public void comprobarHorario(ClaseDia clase){
+    public void comprobarHorario(ClaseDia clase) throws SQLException{
         ArrayList<ArrayList> semana = claseDAO.extraerClasesPorDia();
+        ArrayList<Dia> dias = calendarioDAO.extraerDias();
         switch(clase.getDiaSemana()){
             case "Lunes":{
-                int contador = 0;
-                for(int i = 0; i < semana.get(0).size(); i++){
-                    if(clase.getInicioClase().isAfter(semana.get(0).get(i).) && clase.getFinalClase().isBefore(horaCierre)){
-                        for(int i = 0; i < this.clases.size(); i++){
-                            ClaseDia claseDia = this.clases.get(i);
-                            if(clase.getFinalClase().isBefore(claseDia.getInicioClase()) && clase.getInicioClase().isAfter(claseDia.getFinalClase())){
-                                contador++;
-                            }
+                ArrayList<ClaseDia> lista = semana.get(0);
+                for(int i = 0; i < lista.size()-1; i++){
+                    if(clase.getInicioClase().isAfter(lista.get(i).getFinalClase()) || clase.getFinalClase().isBefore(lista.get(i).getInicioClase())){
+                        if(clase.getInicioClase().)
                         }
                     }
                 }
-                if(clases.size() == contador){
-                    clases.add(clase);
-                    System.out.println("La clase se añadio correctamente");
-                }
+                
             }
         }
     }
