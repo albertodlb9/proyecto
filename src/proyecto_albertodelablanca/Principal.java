@@ -1,6 +1,8 @@
 package proyecto_albertodelablanca;
 
+import com.sun.mail.util.MailConnectException;
 import java.io.File;
+import java.net.ConnectException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.sql.Connection;
@@ -25,6 +27,7 @@ public class Principal {
     private static UsuarioDAO usuarioDAO = new UsuarioDAO(conexion);
     private static Calendario calendario = new Calendario();
     private static DiaDAO diaDAO = new DiaDAO(conexion);
+    private static ClaseDAO claseDAO = new ClaseDAO(conexion);
     
     public static void main(String[] args) {  
         primeraConexion();
@@ -91,8 +94,9 @@ public class Principal {
     private static void menuClasesAdmin(){
         int opcion;
         do{           
-            System.out.println("1. Mostrar clases de esta semana");
-            System.out.println("2. Añadir una clase");
+            System.out.println("1. Mostrar clases");
+            System.out.println("2. Crear una clase");
+            System.out.println("3. Establecer horario de una clase");
             System.out.println("3. Eliminar una clase");
             System.out.println("4. Salir");
             System.out.print("Introduzca la opcion: ");
@@ -104,11 +108,11 @@ public class Principal {
                     break;
                 }
                 case 2:{
-                    //incluirClase();
+                    incluirClase();
                     break;
                 }
                 case 3:{
-                    //eliminarClase();
+                    eliminarClase();
                     break;
                 }
                 case 4:{
@@ -448,5 +452,63 @@ public class Principal {
     
     private static void mostrarClases(){
         
+    }
+    
+    private static void incluirClase(){
+        try{
+            System.out.print("Introduzca el id de la clase: ");
+            int idClase = sc.nextInt();
+            System.out.print("Introduzca el nombre de la clase: ");
+            String nombre = sc.next();
+            System.out.print("Introduzca una breve descripcion: ");
+            String descripcion = sc.next();
+            claseDAO.crearClase(idClase, nombre, descripcion);
+            System.out.println("Clase creada correctamente");
+        }
+        catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        catch(InputMismatchException e){
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    private static void eliminarClase(){
+        try{
+            System.out.println("Introduzca el id de la clase: ");
+            int idClase = sc.nextInt();
+            claseDAO.eliminarClase(idClase);
+            System.out.println("Clase eliminada con exito");
+        }
+        catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        catch(InputMismatchException e){
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    private static void establecerClase(){
+        try{
+            System.out.print("Introduzca el id de la clase: ");
+            int id = sc.nextInt();
+            System.out.print("Introduzca el dia de la clase: ");
+            String dia = sc.next();
+            System.out.print("Introduzca la hora de inicio(hh:mm): ");
+            String horaInicio = sc.next();
+            System.out.print("Introduzca la hora de final(hh:mm): ");
+            String horaFinal = sc.next();
+            System.out.print("Introduzca el numero de plazas: ");
+            int plazas = sc.nextInt();
+
+            claseDAO.establecerClase(id, dia, LocalTime.parse(horaInicio + ":00"), LocalTime.parse(horaFinal + ":00"), plazas);
+            System.out.println("Clase establecida con exito");
+        }
+        catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        catch(InputMismatchException e){
+            System.err.println(e.getMessage());
+        }
     }
 }

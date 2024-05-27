@@ -1,6 +1,7 @@
 
 package proyecto_albertodelablanca;
 
+import com.sun.mail.util.MailConnectException;
 import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;

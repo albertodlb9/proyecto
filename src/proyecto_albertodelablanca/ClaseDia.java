@@ -13,7 +13,7 @@ public class ClaseDia extends Clase {
     private LocalTime inicioClase;
     private LocalTime finalClase;
     private String diaSemana;
-    private ArrayList<Usuario> usuarios;
+    
     private int plazas;
 
     public ClaseDia(LocalTime inicioClase, LocalTime finalClase, String diaSemana, int plazas, int idClase, String nombre, String descripcion) {
@@ -48,31 +48,11 @@ public class ClaseDia extends Clase {
         this.diaSemana = diaSemana;
     }
 
-    public ArrayList<Usuario> getUsuarios() {
-        return usuarios;
-    }
-
-    public void setUsuarios(ArrayList<Usuario> usuarios) {
-        this.usuarios = usuarios;
-    }
-
     public int getPlazas() {
         return plazas;
     }
 
     public void setPlazas(int plazas) {
         this.plazas = plazas;
-    }
-    
-    public int getPlazasLibres(){
-        return plazas - this.usuarios.size();
-    }
-    
-    public void addUsuario(Usuario usuario){
-        if(usuarios.size() < plazas){
-            usuarios.add(usuario);
-        } else{
-            System.out.println("Esta clase ya esta llena");
-        }
-    }
+    }  
 }

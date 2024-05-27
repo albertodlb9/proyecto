@@ -21,7 +21,7 @@ public class ClaseDAO {
         
         ArrayList<ArrayList> semana = new ArrayList<>();
         for(int i = 0; i < 7; i++){
-            semana.add(new ArrayList<>());
+            semana.add(new ArrayList<ClaseDia>());
         }
         String sql = "SELECT clases.*, calendario_clases.horaInicio, calendario_clases.horaFinal, calendario_clases.nombre,calendario_clases.plazas FROM clases LEFT JOIN calendario_clases ON clases.idClase = calendario_clases.idClase;";
         
@@ -71,5 +71,38 @@ public class ClaseDAO {
             }    
         }
         return semana;
+    }
+    
+    public void extraerClasePorId(int id){
+        
+    }
+    
+    public void crearClase(int idClase, String nombre, String descripcion) throws SQLException{        
+        String sql = "INSERT INTO clases VALUES (?, ?, ?);";
+        PreparedStatement statement = conexion.prepareStatement(sql);
+        statement.setInt(1, idClase);
+        statement.setString(2, nombre);
+        statement.setString(3, descripcion);
+
+        statement.executeUpdate();       
+    }
+    
+    public void eliminarClase(int idClase) throws SQLException{
+        String sql = "DELETE FROM clases WHERE idClase = ?;";
+        PreparedStatement statement = conexion.prepareStatement(sql);
+        statement.setInt(1, idClase);
+        statement.executeUpdate();
+    }
+    
+    public void establecerClase(int idClase, String dia, LocalTime horaInicio, LocalTime horaFinal, int plazas) throws SQLException{
+        
+        String sql = "INSERT INTO calendario_clases VALUES (?, ?, ?, ?, ?);";
+        PreparedStatement statement = conexion.prepareStatement(sql);
+        statement.setInt(1, idClase);
+        statement.setString(2, dia);
+        statement.setTime(3, Time.valueOf(horaInicio));
+        statement.setTime(4, Time.valueOf(horaFinal));
+        statement.setInt(5, plazas);
+        statement.executeUpdate();
     }
 }
