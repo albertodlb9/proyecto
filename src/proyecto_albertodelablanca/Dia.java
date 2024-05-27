@@ -1,9 +1,6 @@
 
 package proyecto_albertodelablanca;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-
 /**
  *
  * @author Alberto
@@ -18,7 +15,7 @@ public class Dia {
         this.nombre = nombre;
     }
     
-    public Dia(String nombre, LocalTime horaApertura, LocalTime horaCierre){
+    public Dia(String nombre, int horaApertura, int horaCierre){
         this.nombre = nombre;
         this.horaApertura = horaApertura;
         this.horaCierre = horaCierre;
@@ -28,17 +25,19 @@ public class Dia {
         return horaApertura;
     }
 
-    public void setHoraApertura(LocalTime horaApertura) {
+    public void setHoraApertura(int horaApertura) {
         this.horaApertura = horaApertura;
     }
 
-    public LocalTime getHoraCierre() {
+    public int getHoraCierre() {
         return horaCierre;
     }
 
-    public void setHoraCierre(LocalTime horaCierre) {
+    public void setHoraCierre(int horaCierre) {
         this.horaCierre = horaCierre;
     }
+
+  
 
     public String getNombre() {
         return nombre;

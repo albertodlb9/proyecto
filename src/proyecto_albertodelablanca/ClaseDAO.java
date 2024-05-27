@@ -32,8 +32,8 @@ public class ClaseDAO {
             int idClase = rs.getInt("idClase");
             String nombre = rs.getString("clases.nombre");
             String descripcion = rs.getString("descripcion");
-            LocalTime horaInicio = rs.getTime("horaInicio").toLocalTime();
-            LocalTime horaFinal = rs.getTime("horaFinal").toLocalTime();
+            int horaInicio = rs.getInt("horaInicio");
+            int horaFinal = rs.getInt("horaFinal");
             String nombreDia = rs.getString("nombre");
             int plazas = rs.getInt("calendario_clases.plazas");
 
@@ -94,14 +94,14 @@ public class ClaseDAO {
         statement.executeUpdate();
     }
     
-    public void establecerClase(int idClase, String dia, LocalTime horaInicio, LocalTime horaFinal, int plazas) throws SQLException{
+    public void establecerClase(int idClase, String dia, int horaInicio, int horaFinal, int plazas) throws SQLException{
         
         String sql = "INSERT INTO calendario_clases VALUES (?, ?, ?, ?, ?);";
         PreparedStatement statement = conexion.prepareStatement(sql);
         statement.setInt(1, idClase);
         statement.setString(2, dia);
-        statement.setTime(3, Time.valueOf(horaInicio));
-        statement.setTime(4, Time.valueOf(horaFinal));
+        statement.setInt(3, horaInicio);
+        statement.setInt(4, horaFinal);
         statement.setInt(5, plazas);
         statement.executeUpdate();
     }

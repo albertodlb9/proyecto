@@ -439,12 +439,12 @@ public class Principal {
             String[] semana = {"Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo" };
             for(int i = 0; i < calendario.getDias().length; i++){
                 System.out.print(semana[i] + " apertura (hh:mm): ");
-                String apertura = sc.next();
+                int apertura = sc.nextInt();
                 System.out.print(semana[i] + " cierre (hh:mm): ");
-                String cierre = sc.next();
+                int cierre = sc.nextInt();
 
-                calendario.getDias()[i].setHoraApertura(LocalTime.parse(apertura+":00"));
-                calendario.getDias()[i].setHoraCierre(LocalTime.parse(cierre+":00"));
+                calendario.getDias()[i].setHoraApertura((apertura));
+                calendario.getDias()[i].setHoraCierre((cierre));
                 diaDAO.añadirDia(calendario.getDias()[i]);
             }
         }

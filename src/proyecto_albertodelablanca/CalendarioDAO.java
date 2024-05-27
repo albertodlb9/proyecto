@@ -6,7 +6,6 @@ package proyecto_albertodelablanca;
  * @author Alberto
  */
 import java.sql.*;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class CalendarioDAO {
@@ -18,15 +17,15 @@ public class CalendarioDAO {
     }
     
     public ArrayList<Dia> extraerDias() throws SQLException{
-        String sql = "SELECT ;";
+        String sql = "SELECT * FROM calendario;";
         PreparedStatement statement = conexion.prepareStatement(sql);
         ResultSet rs = statement.executeQuery();
         ArrayList<Dia> dias = new ArrayList<>();
         
         while(rs.next()){
             String nombre = rs.getString("nombre");
-            LocalTime horaApertura = rs.getTime("horaApertura").toLocalTime();
-            LocalTime horaCierre = rs.getTime("horaCierre").toLocalTime();
+            int horaApertura = rs.getInt("horaApertura");
+            int horaCierre = rs.getInt("horaCierre");
             
             Dia dia = new Dia(nombre,horaApertura,horaCierre);
             dias.add(dia);

@@ -1,22 +1,19 @@
 
 package proyecto_albertodelablanca;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-
 /**
  *
  * @author Alberto
  */
 public class ClaseDia extends Clase {
     
-    private LocalTime inicioClase;
-    private LocalTime finalClase;
+    private int inicioClase;
+    private int finalClase;
     private String diaSemana;
     
     private int plazas;
 
-    public ClaseDia(LocalTime inicioClase, LocalTime finalClase, String diaSemana, int plazas, int idClase, String nombre, String descripcion) {
+    public ClaseDia(int inicioClase, int finalClase, String diaSemana, int plazas, int idClase, String nombre, String descripcion) {
         super(idClase, nombre, descripcion);
         this.inicioClase = inicioClase;
         this.finalClase = finalClase;
@@ -24,19 +21,19 @@ public class ClaseDia extends Clase {
         
     }
 
-    public LocalTime getInicioClase() {
+    public int getInicioClase() {
         return inicioClase;
     }
 
-    public void setInicioClase(LocalTime inicioClase) {
+    public void setInicioClase(int inicioClase) {
         this.inicioClase = inicioClase;
     }
 
-    public LocalTime getFinalClase() {
+    public int getFinalClase() {
         return finalClase;
     }
 
-    public void setFinalClase(LocalTime finalClase) {
+    public void setFinalClase(int finalClase) {
         this.finalClase = finalClase;
     }
 
