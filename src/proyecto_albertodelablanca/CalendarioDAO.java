@@ -18,7 +18,7 @@ public class CalendarioDAO {
     }
     
     public ArrayList<Dia> extraerDias() throws SQLException{
-        String sql = "SELECT * FROM calendario;";
+        String sql = "SELECT ;";
         PreparedStatement statement = conexion.prepareStatement(sql);
         ResultSet rs = statement.executeQuery();
         ArrayList<Dia> dias = new ArrayList<>();
