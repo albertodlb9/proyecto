@@ -11,8 +11,8 @@ import java.util.ArrayList;
 public class Dia {
     
     private String nombre;
-    private LocalTime horaApertura;
-    private LocalTime horaCierre;
+    private int horaApertura;
+    private int horaCierre;
 
     public Dia(String nombre) {
         this.nombre = nombre;
@@ -24,7 +24,7 @@ public class Dia {
         this.horaCierre = horaCierre;
     }
 
-    public LocalTime getHoraApertura() {
+    public int getHoraApertura() {
         return horaApertura;
     }
 
