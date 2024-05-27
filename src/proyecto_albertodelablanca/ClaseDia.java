@@ -16,12 +16,12 @@ public class ClaseDia extends Clase {
     private ArrayList<Usuario> usuarios;
     private int plazas;
 
-    public ClaseDia(LocalTime inicioClase, LocalTime finalClase, String diaSemana, int plazas, String idClase, String nombre, String descripcion) {
+    public ClaseDia(LocalTime inicioClase, LocalTime finalClase, String diaSemana, int plazas, int idClase, String nombre, String descripcion) {
         super(idClase, nombre, descripcion);
         this.inicioClase = inicioClase;
         this.finalClase = finalClase;
         this.diaSemana = diaSemana;
-        this.usuarios = new ArrayList<>();
+        
     }
 
     public LocalTime getInicioClase() {
