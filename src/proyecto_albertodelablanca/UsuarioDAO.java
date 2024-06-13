@@ -8,14 +8,17 @@ package proyecto_albertodelablanca;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class UsuarioDAO {
     
     private Connection conexion;
+    private ClaseDAO claseDAO;
     
     public UsuarioDAO(Connection conexion) {
         this.conexion = conexion;
+        this.claseDAO = new ClaseDAO(conexion);
     }
     
     
@@ -145,6 +148,60 @@ public class UsuarioDAO {
             }
         }
         return usuario;
+    }
+    
+    public ArrayList<ClaseDia> extraerReservasPorDni(String dni) throws SQLException{
+        ArrayList<ClaseDia> clases = new ArrayList<>();
+        String sql = "SELECT * FROM clases_usuarios WHERE dni = ? ORDER BY CASE dia_semana\n" +
+"            WHEN 'lunes' THEN 1\n" +
+"            WHEN 'martes' THEN 2\n" +
+"            WHEN 'miércoles' THEN 3\n" +
+"            WHEN 'jueves' THEN 4\n" +
+"            WHEN 'viernes' THEN 5\n" +
+"            WHEN 'sábado' THEN 6\n" +
+"            WHEN 'domingo' THEN 7\n" +
+"         END;";
+        PreparedStatement statement = conexion.prepareStatement(sql);
+        statement.setString(1, dni);
+        ResultSet rs = statement.executeQuery();
+        
+        while(rs.next()){
+            int idClase = rs.getInt("idClase");
+            String dia = rs.getString("dia");
+            LocalTime horaInicio = rs.getTime("horaInicio").toLocalTime();
+            ClaseDia clase = new ClaseDia(horaInicio,null,dia,0,idClase,"","");
+            clases.add(clase);
+        }
+        return clases;
+    }
+    
+    public void realizarReserva(String dni, ClaseDia clase) throws SQLException{
+        ArrayList<ClaseDia> clases = claseDAO.extraerClases_calendario();
+        boolean comprobacion = false;
+        
+        for(int i = 0; i < clases.size(); i++){
+            if(clases.get(i).getDiaSemana().equals(clase.getDiaSemana()) && clases.get(i).getIdClase() == clase.getIdClase() && clases.get(i).getInicioClase().equals(clase.getInicioClase()) && clases.get(i).getPlazas() > 0){
+                comprobacion = true;
+            }
+        }
+        
+        if(comprobacion){
+            String sql1 = "INSERT INTO clases_usuario VALUES(?,?,?,?);";
+            PreparedStatement statement1 = conexion.prepareStatement(sql1);
+            statement1.setInt(1, clase.getIdClase());
+            statement1.setString(1, dni);
+            statement1.setString(3, clase.getDiaSemana());
+            statement1.setTime(4, Time.valueOf(clase.getInicioClase()));
+            statement1.executeUpdate();
+            
+            String sql2 = "UPDATE calendario_clases SET plazas = plazas - 1 WHERE idClase = " + clase.getIdClase() + ";";
+            PreparedStatement statement2 = conexion.prepareStatement(sql2);
+            statement2.executeUpdate();
+            
+            System.out.println("La reserva se ha realizado correctamente");
+        } else{
+            System.err.println("Error: no se ha encontrado ninguna clase que se corresponda con los datos introducidos o no quedan plazas de la misma");
+        }
     }
     
 }

@@ -25,7 +25,7 @@ public class ClaseDAO {
             semana.add(new ArrayList<>());
         }
 
-        String sql = "SELECT clases.*, calendario_clases.horaInicio, calendario_clases.horaFinal, calendario_clases.nombre, calendario_clases.plazas FROM clases, calendario_clases WHERE clases.idClase = calendario_clases.idClase;";        
+        String sql = "SELECT clases.*, calendario_clases.horaInicio, calendario_clases.horaFinal, calendario_clases.nombre, calendario_clases.plazas FROM clases, calendario_clases WHERE clases.idClase = calendario_clases.idClase ORDER BY calendario_clases.horaInicio;";        
         PreparedStatement statement = this.conexion.prepareStatement(sql); 
         ResultSet rs = statement.executeQuery();
 
@@ -53,7 +53,7 @@ public class ClaseDAO {
         return semana;
     }
 
-    private Map<String, Integer> getDayMapping() {
+    public Map<String, Integer> getDayMapping() {
         Map<String, Integer> dayMapping = new HashMap<>();
         dayMapping.put("lunes", 0);
         dayMapping.put("martes", 1);
@@ -113,7 +113,24 @@ public class ClaseDAO {
             clases.add(new ClaseDia(horaInicio,horaFinal,dia,plazas,idClase,"",""));
         }
         return clases;
-}
+    }
+    
+    public ArrayList<Clase> extraerInformacionClases() throws SQLException{
+        String sql = "SELECT * FROM clases ORDER BY idClase;";
+        PreparedStatement statement = conexion.prepareStatement(sql);
+        ResultSet rs = statement.executeQuery();
+        ArrayList<Clase> clases = new ArrayList<>();
+        
+        while(rs.next()){
+            int idClase = rs.getInt("idClase");
+            String nombre = rs.getString("nombre");
+            String descripcion = rs.getString("descripcion");
+            
+            Clase clase = new Clase(idClase,nombre,descripcion);
+            clases.add(clase);
+        }
+        return clases;
+    }
     
     
 }

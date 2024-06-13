@@ -40,8 +40,9 @@ public class Clase {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    
-    
-    
-    
+
+    @Override
+    public String toString() {
+        return "idClase: " + this.idClase + " Nombre: " + this.nombre + " Descripcion: " + this.descripcion;
+    } 
 }

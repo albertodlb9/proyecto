@@ -13,7 +13,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 import javax.activation.DataHandler;
 /**
@@ -87,39 +89,190 @@ public class Principal {
     }
     
     private static void menuUsuario(Usuario usuario){
-        System.out.println("********************************");
-        System.out.println("Bienvenido " + usuario.getNombre() + " " + usuario.getApellidos() + "!");
+        int opcion = 0;
+        do{
+            System.out.println("********************************");
+            System.out.println("Bienvenido " + usuario.getNombre() + " " + usuario.getApellidos() + "!");
+            System.out.println("-----------------MENU-----------------");
+            System.out.println("1. Mostrar tus datos");
+            System.out.println("2. Actualizar tus datos");
+            System.out.println("3. Menu de clases");
+            System.out.println("4. Borrar cuenta");
+            System.out.println("5. Cerrar sesion");
+            try{
+                System.out.print("Introduzca la opcion: ");
+                opcion = sc.nextInt();
+                
+                switch(opcion){
+                    case 1:{
+                        mostrarInformacionCliente(usuario);
+                        break;
+                    }
+                    case 2:{
+                        actualizarUsuario(usuario);
+                        break;
+                    }
+                    case 3:{
+                        menuClasesCliente(usuario);
+                        break;
+                    }
+                    case 4:{
+                        if(eliminarCliente(usuario)){
+                            opcion = 5;
+                        }
+                        break;
+                    }
+                    case 5:{
+                        System.out.println("Cerrando sesion...");
+                        System.out.println("Hasta luego!");
+                        break;
+                    }
+                    default:{
+                        System.err.println("opcion introducida incorrecta");
+                    }
+                }
+            }
+            catch(InputMismatchException e){
+                System.err.println("Error: la opcion introducida es incorrecto");
+            }
+        }while(opcion != 5);   
+    }
+    
+    private static void mostrarInformacionCliente(Usuario usuario){
+        System.out.println(usuario.toString());
+    }
+    
+    private static void menuClasesCliente(Usuario usuario){
+        System.out.println("**************************");
+        int opcion = 0;
+        do{           
+            System.out.println("1. Mostrar horarios de clases");
+            System.out.println("2. Mostrar mis clases reservadas");
+            System.out.println("3. Mostrar informacion de las clases");
+            System.out.println("4. Reservar una clase");
+            System.out.println("5. Eliminar una reserva");
+            System.out.println("6. Salir");
+            try{
+                opcion = sc.nextInt();
+
+                switch(opcion){
+                    case 1:{
+                        mostrarHorariosClases();
+                        break;
+                    }
+                    case 2:{
+                        mostrarMisReservas(usuario);
+                        break;
+                    }
+                    case 3:{
+                        mostrarInformacionClases();
+                        break;
+                    }
+                    case 4:{
+                        reservarClase(usuario);
+                        break;
+                    }
+                    case 5:{
+                        //eliminarReserva();
+                        break;
+                    }
+                    case 6:{
+                        System.out.println("Saliendo del menu de clases...");
+                        break;
+                    }
+                    default:{
+                        System.err.println("Opcion introducida incorrecta");
+                    }
+                }
+            }
+            catch(InputMismatchException e){
+                System.err.println(e.getMessage());
+            }
+        }while(opcion != 6);
+    }
+    
+    private static void mostrarMisReservas(Usuario usuario){
+        try{
+            ArrayList<ClaseDia> clases = usuarioDAO.extraerReservasPorDni(usuario.getDni());
+            String dia = "";
+            int contador = 0;
+            
+            if(!clases.isEmpty()){
+                dia = clases.get(0).getDiaSemana();
+                for(int i = 0; i < clases.size(); i++){
+                    if(!dia.equals(clases.get(i).getDiaSemana())){
+                        dia = clases.get(i).getDiaSemana();
+                        contador = 0;
+                    }
+                    if(contador == 0){
+                        System.out.println(dia);
+                    }
+                    System.out.println(clases.get(i).toString());
+                    contador++;
+                }
+            }
+            
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    private static void reservarClase(Usuario usuario){
+        try{
+            System.out.println("A continuacion se muestran las clases disponibles para hacer una reserva:");
+            mostrarHorariosClases();
+            System.out.println("**************************");
+            System.out.print("Introduzca el id de la clase: ");
+            int idClase = sc.nextInt();
+            System.out.print("Introduzca el dia de la clase: ");
+            String dia = sc.next();
+            System.out.print("Introduzca la hora de inicio(hh:mm): ");
+            LocalTime horaInicio = LocalTime.parse(sc.next() + ":00");
+            
+            ClaseDia clase  = new ClaseDia(horaInicio,null,dia,0,idClase,"","");
+            usuarioDAO.realizarReserva(usuario.getDni(), clase);
+        }
+        catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        
     }
     
     private static void menuClasesAdmin(){
         int opcion;
         do{           
-            System.out.println("1. Mostrar clases");
-            System.out.println("2. Crear una clase");
-            System.out.println("3. Establecer horario de una clase");
-            System.out.println("4. Eliminar una clase");
-            System.out.println("5. Salir");
+            System.out.println("1. Mostrar horarios de clases");
+            System.out.println("2. Mostrar informacion de las clases");
+            System.out.println("3. Crear una clase");
+            System.out.println("4. Establecer horario de una clase");
+            System.out.println("5. Eliminar una clase");
+            System.out.println("6. Salir");
             System.out.print("Introduzca la opcion: ");
             opcion = sc.nextInt();
             
             switch(opcion){
                 case 1:{
-                    mostrarClases();
+                    mostrarHorariosClases();
                     break;
                 }
                 case 2:{
-                    incluirClase();
+                    mostrarInformacionClases();
                     break;
                 }
                 case 3:{
-                    establecerClase();
+                    incluirClase();
                     break;
                 }
                 case 4:{
+                    establecerClase();
+                    break;
+                }
+                case 5:{
                      eliminarClase();
                      break;
                 }
-                case 5:{
+                case 6:{
                     System.out.println("Saliendo del menu de opciones...");
                 }
                 default:{
@@ -127,11 +280,11 @@ public class Principal {
                     break;
                 }
             }
-        }while(opcion != 5);
+        }while(opcion != 6);
     }
     
     private static void primeraConexion(){
-        boolean comprobacion = false;
+        boolean comprobacion = true;
         do{
             try{
                 ArrayList<Usuario> usuarios = usuarioDAO.extraerUsuarios();
@@ -140,22 +293,25 @@ public class Principal {
                     System.out.println("Al no haber ninguna cuenta registrada debera crear una cuenta de administrador.");
                     crearCuenta("admin");   
                 } 
-                comprobacion = true;
+                comprobacion = false;
             }
             catch(SQLException e){
             System.err.println(e.getMessage());
             }
-        }while(!comprobacion);
+            catch(Exception e){
+                System.err.println("Error");
+            }
+        }while(comprobacion);
         do{
             try{
-                comprobacion = false;
-                establecerHorario();
                 comprobacion = true;
+                establecerHorario();
+                comprobacion = false;
             }
             catch(SQLException e){
                 System.out.println(e.getMessage());
             }
-        }while(!comprobacion);
+        }while(comprobacion);
     }
     
     private static void crearCuenta(String tipo){
@@ -372,7 +528,8 @@ public class Principal {
         }
     }
     
-    private static void eliminarCliente(Usuario usuario){
+    private static boolean eliminarCliente(Usuario usuario){
+        boolean salida = false;
         if(usuario.getTipo().equals("admin")){
             try{
                 System.out.print("Introduzca el dni del cliente: ");
@@ -388,11 +545,13 @@ public class Principal {
         }else{
             try{
                 usuarioDAO.eliminarUsuario(usuario.getDni());
+                salida = true;
             }
             catch(SQLException e){
                 System.err.println(e.getMessage());
             }
         }
+        return salida;
     }
     
     private static void recuperarPassword(){
@@ -454,7 +613,7 @@ public class Principal {
         }
     }
     
-    private static void mostrarClases(){
+    private static void mostrarHorariosClases(){
         try{
             ArrayList<ArrayList<ClaseDia>> semana = claseDAO.extraerClasesPorDia();
             
@@ -477,6 +636,24 @@ public class Principal {
         catch(IndexOutOfBoundsException e){
             System.err.println(e.getMessage());
         }
+    }
+    
+    private static void mostrarInformacionClases(){
+        System.out.println("***********************************");
+        try{
+            ArrayList<Clase> clases = claseDAO.extraerInformacionClases();
+            if(!clases.isEmpty()){
+                for(int i = 0; i < clases.size(); i++){
+                    System.out.println(clases.get(i).toString());
+                }
+            } else{
+                System.out.println("No hay clases creadas");
+            }
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        System.out.println("***********************************");
     }
     
     private static void incluirClase(){
@@ -546,5 +723,6 @@ public class Principal {
             System.out.println(e.getMessage());
         }
     }
+    
     
 }
