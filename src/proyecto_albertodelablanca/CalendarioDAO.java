@@ -25,8 +25,8 @@ public class CalendarioDAO {
         
         while(rs.next()){
             String nombre = rs.getString("nombre");
-            LocalTime horaApertura = rs.getTime("horaApertura").toLocalTime();
-            LocalTime horaCierre = rs.getTime("horaCierre").toLocalTime();
+            LocalTime horaApertura = rs.getTime("horarioApertura").toLocalTime();
+            LocalTime horaCierre = rs.getTime("horarioCierre").toLocalTime();
             
             Dia dia = new Dia(nombre,horaApertura,horaCierre);
             dias.add(dia);

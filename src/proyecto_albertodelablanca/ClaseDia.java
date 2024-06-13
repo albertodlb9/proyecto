@@ -13,7 +13,6 @@ public class ClaseDia extends Clase {
     private LocalTime inicioClase;
     private LocalTime finalClase;
     private String diaSemana;
-    
     private int plazas;
 
     public ClaseDia(LocalTime inicioClase, LocalTime finalClase, String diaSemana, int plazas, int idClase, String nombre, String descripcion) {
@@ -21,7 +20,7 @@ public class ClaseDia extends Clase {
         this.inicioClase = inicioClase;
         this.finalClase = finalClase;
         this.diaSemana = diaSemana;
-        
+        this.plazas = plazas;
     }
 
     public LocalTime getInicioClase() {
@@ -55,4 +54,11 @@ public class ClaseDia extends Clase {
     public void setPlazas(int plazas) {
         this.plazas = plazas;
     }  
+
+    @Override
+    public String toString() {
+        return "idClase: " + super.getIdClase() + " nombre: " + super.getNombre() + " Hora de inicio: " + this.getInicioClase() + " Hora de finalizacion: " + this.getFinalClase() + " Plazas: " + this.getPlazas();
+    }
+    
+    
 }

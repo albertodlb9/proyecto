@@ -97,14 +97,14 @@ public class Principal {
             System.out.println("1. Mostrar clases");
             System.out.println("2. Crear una clase");
             System.out.println("3. Establecer horario de una clase");
-            System.out.println("3. Eliminar una clase");
-            System.out.println("4. Salir");
+            System.out.println("4. Eliminar una clase");
+            System.out.println("5. Salir");
             System.out.print("Introduzca la opcion: ");
             opcion = sc.nextInt();
             
             switch(opcion){
                 case 1:{
-                    //mostrarClases();
+                    mostrarClases();
                     break;
                 }
                 case 2:{
@@ -112,18 +112,22 @@ public class Principal {
                     break;
                 }
                 case 3:{
-                    eliminarClase();
+                    establecerClase();
                     break;
                 }
                 case 4:{
-                    
+                     eliminarClase();
+                     break;
+                }
+                case 5:{
+                    System.out.println("Saliendo del menu de opciones...");
                 }
                 default:{
                     System.err.println("La opcion introducida es incorrecta");
                     break;
                 }
             }
-        }while(opcion != 4);
+        }while(opcion != 5);
     }
     
     private static void primeraConexion(){
@@ -302,7 +306,7 @@ public class Principal {
                 System.err.println(e.getMessage());
             }
             catch(NullPointerException e){
-                System.err.println("El nickname es incorrecto es incorrecto");
+                System.err.println("El nickname es incorrecto");
             }
         } while(salida);
     }
@@ -451,7 +455,28 @@ public class Principal {
     }
     
     private static void mostrarClases(){
-        
+        try{
+            ArrayList<ArrayList<ClaseDia>> semana = claseDAO.extraerClasesPorDia();
+            
+            for(int i = 0; i < semana.size(); i++){
+                ArrayList<ClaseDia> dia = semana.get(i); 
+                if(!dia.isEmpty()){
+                    System.out.println(dia.get(0).getDiaSemana());
+                }
+                for(int j = 0; j < dia.size(); j++){
+                   System.out.println(dia.get(j).toString());        
+                }
+            }
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        catch(NullPointerException e){
+            System.out.println(e.getMessage());
+        }
+        catch(IndexOutOfBoundsException e){
+            System.err.println(e.getMessage());
+        }
     }
     
     private static void incluirClase(){
@@ -500,9 +525,16 @@ public class Principal {
             String horaFinal = sc.next();
             System.out.print("Introduzca el numero de plazas: ");
             int plazas = sc.nextInt();
-
-            claseDAO.establecerClase(id, dia, LocalTime.parse(horaInicio + ":00"), LocalTime.parse(horaFinal + ":00"), plazas);
-            System.out.println("Clase establecida con exito");
+            
+            ClaseDia clase = new ClaseDia(LocalTime.parse(horaInicio + ":00"), LocalTime.parse(horaFinal + ":00"),dia,plazas,id,"","");
+            
+            if(diaDAO.comprobarHorario(clase)){
+                claseDAO.establecerClase(id, dia, LocalTime.parse(horaInicio + ":00"), LocalTime.parse(horaFinal + ":00"), plazas);
+                System.out.println("Clase establecida con exito");
+            } else{
+                System.out.println("No se pudo establecer la clase por incompatibilidad horaria");
+            }
+            
         }
         catch(SQLException e){
             System.err.println(e.getMessage());
@@ -510,5 +542,9 @@ public class Principal {
         catch(InputMismatchException e){
             System.err.println(e.getMessage());
         }
+        catch(NullPointerException e){
+            System.out.println(e.getMessage());
+        }
     }
+    
 }
