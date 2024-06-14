@@ -18,7 +18,7 @@ public class CalendarioDAO {
     }
     
     public ArrayList<Dia> extraerDias() throws SQLException{
-        String sql = "SELECT * FROM calendario;";
+        String sql = "SELECT * FROM calendario ORDER BY CASE nombre WHEN 'lunes' THEN 1 WHEN 'martes' THEN 2 WHEN 'miércoles' THEN 3 WHEN 'jueves' THEN 4 WHEN 'viernes' THEN 5 WHEN 'sábado' THEN 6 WHEN 'domingo' THEN 7 END;;";
         PreparedStatement statement = conexion.prepareStatement(sql);
         ResultSet rs = statement.executeQuery();
         ArrayList<Dia> dias = new ArrayList<>();

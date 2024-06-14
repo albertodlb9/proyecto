@@ -29,7 +29,7 @@ public class ClaseDAO {
         PreparedStatement statement = this.conexion.prepareStatement(sql); 
         ResultSet rs = statement.executeQuery();
 
-        Map<String, Integer> dayMapping = getDayMapping();
+        Map<String, Integer> mapaDias = this.mapaDias();
         ArrayList<ClaseDia> comprobacion = this.extraerClases_calendario();
 
         if(!comprobacion.isEmpty()){
@@ -43,9 +43,9 @@ public class ClaseDAO {
                 int plazas = rs.getInt("calendario_clases.plazas");
 
                 ClaseDia clase = new ClaseDia(horaInicio, horaFinal, nombreDia, plazas, idClase, nombre, descripcion);
-                Integer dayIndex = dayMapping.get(clase.getDiaSemana());
-                if (dayIndex != null) {
-                    semana.get(dayIndex).add(clase);
+                Integer indice = mapaDias.get(clase.getDiaSemana());
+                if (indice != null) {
+                    semana.get(indice).add(clase);
                 }
             }
         }
@@ -53,16 +53,16 @@ public class ClaseDAO {
         return semana;
     }
 
-    public Map<String, Integer> getDayMapping() {
-        Map<String, Integer> dayMapping = new HashMap<>();
-        dayMapping.put("lunes", 0);
-        dayMapping.put("martes", 1);
-        dayMapping.put("miercoles", 2);
-        dayMapping.put("jueves", 3);
-        dayMapping.put("viernes", 4);
-        dayMapping.put("sabado", 5);
-        dayMapping.put("domingo", 6);
-        return dayMapping;
+    public Map<String, Integer> mapaDias() {
+        Map<String, Integer> mapaDias = new HashMap<>();
+        mapaDias.put("lunes", 0);
+        mapaDias.put("martes", 1);
+        mapaDias.put("miercoles", 2);
+        mapaDias.put("jueves", 3);
+        mapaDias.put("viernes", 4);
+        mapaDias.put("sabado", 5);
+        mapaDias.put("domingo", 6);
+        return mapaDias;
     }
 
     

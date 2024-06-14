@@ -152,24 +152,17 @@ public class UsuarioDAO {
     
     public ArrayList<ClaseDia> extraerReservasPorDni(String dni) throws SQLException{
         ArrayList<ClaseDia> clases = new ArrayList<>();
-        String sql = "SELECT * FROM clases_usuarios WHERE dni = ? ORDER BY CASE dia\n" +
-"            WHEN 'lunes' THEN 1\n" +
-"            WHEN 'martes' THEN 2\n" +
-"            WHEN 'miércoles' THEN 3\n" +
-"            WHEN 'jueves' THEN 4\n" +
-"            WHEN 'viernes' THEN 5\n" +
-"            WHEN 'sábado' THEN 6\n" +
-"            WHEN 'domingo' THEN 7\n" +
-"         END;";
+        String sql = "SELECT * FROM clases_usuarios, clases WHERE clases_usuarios.idClase = clases.idClase AND dni = ? ORDER BY CASE dia WHEN 'lunes' THEN 1 WHEN 'martes' THEN 2 WHEN 'miércoles' THEN 3 WHEN 'jueves' THEN 4 WHEN 'viernes' THEN 5 WHEN 'sábado' THEN 6 WHEN 'domingo' THEN 7 END;";
         PreparedStatement statement = conexion.prepareStatement(sql);
         statement.setString(1, dni);
         ResultSet rs = statement.executeQuery();
         
         while(rs.next()){
-            int idClase = rs.getInt("idClase");
-            String dia = rs.getString("dia");
-            LocalTime horaInicio = rs.getTime("horaInicio").toLocalTime();
-            ClaseDia clase = new ClaseDia(horaInicio,null,dia,0,idClase,"","");
+            int idClase = rs.getInt("clases_usuarios.idClase");
+            String dia = rs.getString("clases_usuarios.dia");
+            LocalTime horaInicio = rs.getTime("clases_usuarios.horaInicio").toLocalTime();
+            String nombre = rs.getString("clases.nombre");
+            ClaseDia clase = new ClaseDia(horaInicio,null,dia,0,idClase,nombre,"");
             clases.add(clase);
         }
         return clases;
@@ -237,6 +230,7 @@ public class UsuarioDAO {
         } else{
             System.err.println("Error: los datos introducido no se corresponden con ninguna reserva o usted no ha relaizado ninguna reserva aun");
         }
+        System.out.println("***************************");
     }
     
     public void cancelarTodasReservasUsuario(String dni) throws SQLException{

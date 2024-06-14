@@ -47,5 +47,12 @@ public class Dia {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+
+    @Override
+    public String toString() {
+        return this.getNombre() + " " + this.horaApertura + " " + this.horaCierre;
+    }
+    
+    
     
 }

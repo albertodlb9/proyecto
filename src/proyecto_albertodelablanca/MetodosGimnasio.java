@@ -18,7 +18,7 @@ import javax.activation.DataHandler;
  *
  * @author Alberto
  */
-public class MetodosGimnasio {
+public abstract  class MetodosGimnasio {
     
     private static Connection conexion = Conexion.getConexion();
     private static UsuarioDAO usuarioDAO = new UsuarioDAO(conexion);
@@ -26,6 +26,7 @@ public class MetodosGimnasio {
     private static Calendario calendario = new Calendario();
     private static DiaDAO diaDAO = new DiaDAO(conexion);
     private static ClaseDAO claseDAO = new ClaseDAO(conexion);
+    private static CalendarioDAO calendarioDAO = new CalendarioDAO(conexion);
     
     public static void primeraConexion(){
         boolean comprobacion = true;
@@ -169,9 +170,8 @@ public class MetodosGimnasio {
                                 contador =0;
                                 break;
                             }
-                            case 2:{
-                                Menus.menuInicial();
-                                salida = false;
+                            case 2:{  
+                                salida = true;
                                 break;
                             }
                             default:{
@@ -188,6 +188,9 @@ public class MetodosGimnasio {
             }
             catch(NullPointerException e){
                 System.err.println("El nickname es incorrecto");
+            }
+            catch(InputMismatchException e){
+                System.err.println(e.getMessage());
             }
         } while(salida);
     }
@@ -231,6 +234,9 @@ public class MetodosGimnasio {
         catch(NullPointerException e){
             System.err.println("No se ha encontrado el nickname");
         }
+        catch(InputMismatchException e){
+            System.err.println(e.getMessage());
+        }
     }
      
     public static void buscarCliente(){
@@ -244,7 +250,10 @@ public class MetodosGimnasio {
             System.err.println(e.getMessage());
         }
         catch(NullPointerException e){
-            System.out.println("No se ha encontrado ningun cliente con ese dni");
+            System.err.println("No se ha encontrado ningun cliente con ese dni");
+        }
+        catch(InputMismatchException e){
+            System.err.println(e.getMessage());
         }
     }
       
@@ -260,7 +269,7 @@ public class MetodosGimnasio {
             }
         }
         catch(SQLException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
     
@@ -270,8 +279,12 @@ public class MetodosGimnasio {
             try{
                 System.out.print("Introduzca el dni del cliente: ");
                 String dni = sc.next();
-                usuarioDAO.cancelarTodasReservasUsuario(dni);
-                usuarioDAO.eliminarUsuario(dni);
+                if(!usuario.getDni().equals(dni)){
+                    usuarioDAO.cancelarTodasReservasUsuario(dni);
+                    usuarioDAO.eliminarUsuario(dni);
+                }else{
+                    System.err.println("No se puede borrar su propia cuenta de administrador");
+                }
             }
             catch(SQLException e){
                 System.err.println(e.getMessage());
@@ -286,6 +299,9 @@ public class MetodosGimnasio {
                 salida = true;
             }
             catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+            catch(InputMismatchException e){
                 System.err.println(e.getMessage());
             }
         }
@@ -320,6 +336,12 @@ public class MetodosGimnasio {
         catch(SQLException e){
             System.err.println(e.getMessage());
         }
+        catch(InputMismatchException e){
+            System.err.println(e.getMessage());
+        }
+        catch(Exception e){
+            System.err.println(e.getMessage());
+        }
     }
     
     public static void mostrarHorariosClases(){
@@ -330,6 +352,7 @@ public class MetodosGimnasio {
             for(int i = 0; i < semana.size(); i++){
                 ArrayList<ClaseDia> dia = semana.get(i); 
                 if(!dia.isEmpty()){
+                    System.out.println("***************************");
                     System.out.println(dia.get(0).getDiaSemana());
                     contador++;
                 }
@@ -337,15 +360,15 @@ public class MetodosGimnasio {
                    System.out.println(dia.get(j).toString());        
                 }
             }
-            if(contador > 0){
-                System.out.println("No hay ninguna clase programada");
+            if(contador == 0){
+                System.err.println("No hay ninguna clase programada");
             }
         }
         catch(SQLException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         catch(NullPointerException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         catch(IndexOutOfBoundsException e){
             System.err.println(e.getMessage());
@@ -361,11 +384,11 @@ public class MetodosGimnasio {
                     System.out.println(clases.get(i).toString());
                 }
             } else{
-                System.out.println("No hay clases creadas");
+                System.err.println("No hay clases creadas");
             }
         }
         catch(SQLException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         System.out.println("***********************************");
     }
@@ -385,7 +408,7 @@ public class MetodosGimnasio {
             System.err.println(e.getMessage());
         }
         catch(InputMismatchException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
      
@@ -408,7 +431,7 @@ public class MetodosGimnasio {
                 claseDAO.establecerClase(id, dia, LocalTime.parse(horaInicio + ":00"), LocalTime.parse(horaFinal + ":00"), plazas);
                 System.out.println("Clase establecida con exito");
             } else{
-                System.out.println("No se pudo establecer la clase por incompatibilidad horaria");
+                System.err.println("No se pudo establecer la clase por incompatibilidad horaria");
             }
             
         }
@@ -419,7 +442,10 @@ public class MetodosGimnasio {
             System.err.println(e.getMessage());
         }
         catch(NullPointerException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
+        }
+        catch(DateTimeParseException e){
+            System.err.println(e.getMessage());
         }
     }
     
@@ -445,10 +471,10 @@ public class MetodosGimnasio {
     public static boolean mostrarMisReservas(Usuario usuario){
         boolean resultado = false;
         try{
+            System.out.println("******************************");
             ArrayList<ClaseDia> clases = usuarioDAO.extraerReservasPorDni(usuario.getDni());
             String dia = "";
             int contador = 0;
-            
             
             if(!clases.isEmpty()){
                 dia = clases.get(0).getDiaSemana();
@@ -465,17 +491,18 @@ public class MetodosGimnasio {
                 }
                 resultado = true;
             } else{
-                System.out.println("Usted no ha realizado ninguna reserva");
-            }            
+                System.err.println("Usted no ha realizado ninguna reserva");
+            } 
         }
         catch(SQLException e){
-            System.out.println(e.getMessage());
-        } 
+            System.err.println(e.getMessage());
+        }
         return resultado;
     }
     
     public static void reservarClase(Usuario usuario){
         try{
+            System.out.println("******************************");
             System.out.println("A continuacion se muestran las clases disponibles para hacer una reserva:");
             mostrarHorariosClases();
             System.out.println("**************************");
@@ -495,12 +522,16 @@ public class MetodosGimnasio {
         catch(InputMismatchException e){
             System.err.println(e.getMessage());
         }
+        catch(DateTimeParseException e){
+            System.err.println(e.getMessage());
+        }
     }
     
     public static void eliminarReserva(Usuario usuario){
+        System.out.println("******************************");
         System.out.println("A continuacion se muestran sus reservas:");
         if(mostrarMisReservas(usuario)){
-            System.out.println("************************");
+            
             try{
                 System.out.print("Introduzca el id de la clase: ");
                 int idClase = sc.nextInt();
@@ -518,6 +549,24 @@ public class MetodosGimnasio {
             catch(InputMismatchException e){
                 System.err.println(e.getMessage());
             }
+            catch(DateTimeParseException e){
+            System.err.println(e.getMessage());
+            }
+        }
+    }
+    
+    public static void mostrarHorarioGimnasio(){
+        try{
+            System.out.println("**************************");
+            ArrayList<Dia> dias = calendarioDAO.extraerDias();
+            if(!dias.isEmpty()){
+                for(int i = 0; i < dias.size(); i++){
+                    System.out.println(dias.get(i).toString());
+                }
+            }
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
         }
     }
 }

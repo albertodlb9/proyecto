@@ -1,53 +1,57 @@
-
 package proyecto_albertodelablanca;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-
 /**
  *
  * @author Alberto
  */
-public class Menus {
+public abstract class Menus {
     
     private static Scanner sc = new Scanner(System.in).useDelimiter("\n");
     
     
     
-    public static void menuInicial(){
-       
-        int opcion;
+    public static void menuInicial(){  
+        int opcion = 0;
         do{
-            System.out.println("***************************************");
-            System.out.println("Bienvenido");
-            System.out.println("1. Iniciar sesion");
-            System.out.println("2. Registrar nuevo usuario");
-            System.out.println("3. Ha olvidado su contraseña?");
-            System.out.println("4. Salir del programa");
-            System.out.print("Introduzca una opcion: ");
-            opcion = sc.nextInt();
-            
-            switch(opcion){
-                case 1:{
-                   MetodosGimnasio.login();
-                   break;
+            try{
+                System.out.println("***************************************");
+                System.out.println("Bienvenido");
+                System.out.println("1. Iniciar sesion");
+                System.out.println("2. Registrar nuevo usuario");
+                System.out.println("3. Ha olvidado su contraseña?");
+                System.out.println("4. Salir del programa");
+                System.out.print("Introduzca una opcion: ");
+                opcion = sc.nextInt();
+
+                switch(opcion){
+                    case 1:{
+                       MetodosGimnasio.login();
+                       break;
+                    }
+                    case 2:{
+                        MetodosGimnasio.crearCuenta("cliente");
+                        break;
+                    }
+                    case 3:{
+                        MetodosGimnasio.recuperarPassword();
+                        break;
+                    }
+                    case 4:{
+                        System.out.println("Hasta luego!");
+                        Conexion.cerrarConexion();
+                        break;
+                    }
+                    default:{
+                        System.out.println("La opcion introducida es incorrecta");
+                    }
                 }
-                case 2:{
-                    MetodosGimnasio.crearCuenta("cliente");
-                    break;
-                }
-                case 3:{
-                    MetodosGimnasio.recuperarPassword();
-                    break;
-                }
-                case 4:{
-                    System.out.println("Hasta luego!");
-                    break;
-                }
-                default:{
-                    System.out.println("La opcion introducida es incorrecta");
-                }
+            }
+            catch(InputMismatchException e){
+                System.err.println("Error: el dato introducido no es correcto");
+                sc.next();
             }
         }while(opcion != 4);  
     }
@@ -64,7 +68,8 @@ public class Menus {
             System.out.println("3. Dar de baja un cliente");
             System.out.println("4. Menu de gestion de clases");
             System.out.println("5. Actualizar informacion del usuario");
-            System.out.println("6. Cerrar sesion");
+            System.out.println("6. Mostrar horario gimnasio");
+            System.out.println("7. Cerrar sesion");
             try{
                 System.out.print("Introduzca la opcion: ");
                 opcion = sc.nextInt();
@@ -91,6 +96,10 @@ public class Menus {
                         break;
                     }
                     case 6:{
+                        MetodosGimnasio.mostrarHorarioGimnasio();
+                        break;
+                    }
+                    case 7:{
                         break;
                     }
                     default :{
@@ -101,13 +110,14 @@ public class Menus {
                 System.err.println("Error: la opcion introducida es incorrecto");
             }
             
-        }while(opcion != 6);
+        }while(opcion != 7);
     }
      
      
      private static void menuClasesAdmin(){
         int opcion;
-        do{           
+        do{   
+            System.out.println("**********************************");
             System.out.println("1. Mostrar horarios de clases");
             System.out.println("2. Mostrar informacion de las clases");
             System.out.println("3. Crear una clase");
@@ -140,6 +150,7 @@ public class Menus {
                 }
                 case 6:{
                     System.out.println("Saliendo del menu de opciones...");
+                    break;
                 }
                 default:{
                     System.err.println("La opcion introducida es incorrecta");
@@ -154,12 +165,14 @@ public class Menus {
         do{
             System.out.println("********************************");
             System.out.println("Bienvenido " + usuario.getNombre() + " " + usuario.getApellidos() + "!");
+            System.out.println("********************************");
             System.out.println("-----------------MENU-----------------");
             System.out.println("1. Mostrar tus datos");
             System.out.println("2. Actualizar tus datos");
             System.out.println("3. Menu de clases");
-            System.out.println("4. Borrar cuenta");
-            System.out.println("5. Cerrar sesion");
+            System.out.println("4. Mostrar horario gimnasio");
+            System.out.println("5. Borrar cuenta");
+            System.out.println("6. Cerrar sesion");
             try{
                 System.out.print("Introduzca la opcion: ");
                 opcion = sc.nextInt();
@@ -178,12 +191,16 @@ public class Menus {
                         break;
                     }
                     case 4:{
+                        MetodosGimnasio.mostrarHorarioGimnasio();
+                        break;
+                    }
+                    case 5:{
                         if(MetodosGimnasio.eliminarCliente(usuario)){
                             opcion = 5;
                         }
                         break;
                     }
-                    case 5:{
+                    case 6:{
                         System.out.println("Cerrando sesion...");
                         System.out.println("Hasta luego!");
                         break;
@@ -196,13 +213,13 @@ public class Menus {
             catch(InputMismatchException e){
                 System.err.println("Error: la opcion introducida es incorrecto");
             }
-        }while(opcion != 5);   
+        }while(opcion != 6);   
     } 
      
     private static void menuClasesCliente(Usuario usuario){
-        System.out.println("**************************");
         int opcion = 0;
-        do{           
+        do{    
+             System.out.println("**************************");
             System.out.println("1. Mostrar horarios de clases");
             System.out.println("2. Mostrar mis clases reservadas");
             System.out.println("3. Mostrar informacion de las clases");
