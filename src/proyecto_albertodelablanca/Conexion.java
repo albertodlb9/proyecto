@@ -13,7 +13,7 @@ public class Conexion {
     // Datos de conexión
     private static final String URL = "jdbc:mysql://localhost:3306/gimnasio";
     private static final String USUARIO = "root";
-    private static final String PASSWD = "ronaldo_9";
+    private static final String PASSWD = "contraseña";
     
     // Objeto de conexión a la base de datos
     private static Connection conexion;

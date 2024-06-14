@@ -21,7 +21,7 @@ public class Email {
     //La dirección de correo de envío
     String remitente = "saloalberto97@gmail.com";
     //La clave de aplicación obtenida según se explica en este artículo:
-    String claveemail = "wkmh ucgu eyju fsrw";
+    String claveemail = "clave";
 
     Properties props = System.getProperties();
     props.put("mail.smtp.host", "smtp.gmail.com");  //El servidor SMTP de Google
