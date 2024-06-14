@@ -152,7 +152,7 @@ public class UsuarioDAO {
     
     public ArrayList<ClaseDia> extraerReservasPorDni(String dni) throws SQLException{
         ArrayList<ClaseDia> clases = new ArrayList<>();
-        String sql = "SELECT * FROM clases_usuarios WHERE dni = ? ORDER BY CASE dia_semana\n" +
+        String sql = "SELECT * FROM clases_usuarios WHERE dni = ? ORDER BY CASE dia\n" +
 "            WHEN 'lunes' THEN 1\n" +
 "            WHEN 'martes' THEN 2\n" +
 "            WHEN 'miércoles' THEN 3\n" +
@@ -186,21 +186,79 @@ public class UsuarioDAO {
         }
         
         if(comprobacion){
-            String sql1 = "INSERT INTO clases_usuario VALUES(?,?,?,?);";
+            String sql1 = "INSERT INTO clases_usuarios VALUES(?,?,?,?);";
             PreparedStatement statement1 = conexion.prepareStatement(sql1);
             statement1.setInt(1, clase.getIdClase());
-            statement1.setString(1, dni);
+            statement1.setString(2, dni);
             statement1.setString(3, clase.getDiaSemana());
             statement1.setTime(4, Time.valueOf(clase.getInicioClase()));
             statement1.executeUpdate();
             
-            String sql2 = "UPDATE calendario_clases SET plazas = plazas - 1 WHERE idClase = " + clase.getIdClase() + ";";
+            String sql2 = "UPDATE calendario_clases SET plazas = plazas - 1 WHERE idClase = ? AND horaInicio = ? AND nombre = ?;";
             PreparedStatement statement2 = conexion.prepareStatement(sql2);
+            statement2.setInt(1, clase.getIdClase());
+            statement2.setTime(2, Time.valueOf(clase.getInicioClase()));
+            statement2.setString(3, clase.getDiaSemana());
             statement2.executeUpdate();
             
             System.out.println("La reserva se ha realizado correctamente");
         } else{
             System.err.println("Error: no se ha encontrado ninguna clase que se corresponda con los datos introducidos o no quedan plazas de la misma");
+        }
+    }
+    
+    public void cancelarReserva(String dni, ClaseDia clase) throws SQLException{
+        ArrayList<ClaseDia> reservas = this.extraerReservasPorDni(dni);
+        boolean comprobacion = false;
+        
+        for(int i = 0; i < reservas.size(); i++){
+            if(clase.getIdClase() == reservas.get(i).getIdClase() && clase.getDiaSemana().equals(reservas.get(i).getDiaSemana()) && clase.getInicioClase().equals(reservas.get(i).getInicioClase())){
+              comprobacion = true;  
+            }
+        }
+        
+        if(comprobacion){
+            String sql1 = "DELETE FROM clases_usuarios WHERE dni = ? AND idClase = ? AND dia = ? AND horaInicio = ?;";
+            PreparedStatement statement1 = conexion.prepareStatement(sql1);
+            statement1.setString(1,dni);
+            statement1.setInt(2, clase.getIdClase());
+            statement1.setString(3, clase.getDiaSemana());
+            statement1.setTime(4,Time.valueOf(clase.getInicioClase()));
+            statement1.executeUpdate();
+            
+            String sql2 = "UPDATE calendario_clases SET plazas = plazas + 1 WHERE idClase = ? AND horaInicio = ? AND nombre = ?;";
+            PreparedStatement statement2 = conexion.prepareStatement(sql2);
+            statement2.setInt(1, clase.getIdClase());
+            statement2.setTime(2, Time.valueOf(clase.getInicioClase()));
+            statement2.setString(3, clase.getDiaSemana());
+            statement2.executeUpdate();
+            
+            System.out.println("La cancelacion se ha realizado correctamente");
+        } else{
+            System.err.println("Error: los datos introducido no se corresponden con ninguna reserva o usted no ha relaizado ninguna reserva aun");
+        }
+    }
+    
+    public void cancelarTodasReservasUsuario(String dni) throws SQLException{
+        ArrayList<ClaseDia> reservas = this.extraerReservasPorDni(dni);
+        
+        if(!reservas.isEmpty()){
+            for(int i = 0; i < reservas.size(); i++){
+                String sql1 = "DELETE FROM clases_usuarios WHERE dni = ? AND idClase = ? AND dia = ? AND horaInicio = ?;";
+                PreparedStatement statement1 = conexion.prepareStatement(sql1);
+                statement1.setString(1,dni);
+                statement1.setInt(2, reservas.get(i).getIdClase());
+                statement1.setString(3, reservas.get(i).getDiaSemana());
+                statement1.setTime(4,Time.valueOf(reservas.get(i).getInicioClase()));
+                statement1.executeUpdate();
+
+                String sql2 = "UPDATE calendario_clases SET plazas = plazas + 1 WHERE idClase = ? AND horaInicio = ? AND nombre = ?;";
+                PreparedStatement statement2 = conexion.prepareStatement(sql2);
+                statement2.setInt(1, reservas.get(i).getIdClase());
+                statement2.setTime(2, Time.valueOf(reservas.get(i).getInicioClase()));
+                statement2.setString(3, reservas.get(i).getDiaSemana());
+                statement2.executeUpdate();
+            }           
         }
     }
     

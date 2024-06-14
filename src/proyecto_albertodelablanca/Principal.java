@@ -152,6 +152,7 @@ public class Principal {
             System.out.println("4. Reservar una clase");
             System.out.println("5. Eliminar una reserva");
             System.out.println("6. Salir");
+            System.out.print("Introduzca su opcion: ");
             try{
                 opcion = sc.nextInt();
 
@@ -173,7 +174,7 @@ public class Principal {
                         break;
                     }
                     case 5:{
-                        //eliminarReserva();
+                        eliminarReserva(usuario);
                         break;
                     }
                     case 6:{
@@ -191,11 +192,13 @@ public class Principal {
         }while(opcion != 6);
     }
     
-    private static void mostrarMisReservas(Usuario usuario){
+    private static boolean mostrarMisReservas(Usuario usuario){
+        boolean resultado = false;
         try{
             ArrayList<ClaseDia> clases = usuarioDAO.extraerReservasPorDni(usuario.getDni());
             String dia = "";
             int contador = 0;
+            
             
             if(!clases.isEmpty()){
                 dia = clases.get(0).getDiaSemana();
@@ -210,12 +213,15 @@ public class Principal {
                     System.out.println(clases.get(i).toString());
                     contador++;
                 }
-            }
-            
+                resultado = true;
+            } else{
+                System.out.println("Usted no ha realizado ninguna reserva");
+            }            
         }
         catch(SQLException e){
             System.out.println(e.getMessage());
-        }
+        } 
+        return resultado;
     }
     
     private static void reservarClase(Usuario usuario){
@@ -236,7 +242,33 @@ public class Principal {
         catch(SQLException e){
             System.err.println(e.getMessage());
         }
-        
+        catch(InputMismatchException e){
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    private static void eliminarReserva(Usuario usuario){
+        System.out.println("A continuacion se muestran sus reservas:");
+        if(mostrarMisReservas(usuario)){
+            System.out.println("************************");
+            try{
+                System.out.print("Introduzca el id de la clase: ");
+                int idClase = sc.nextInt();
+                System.out.print("Introduzca el dia de la clase: ");
+                String dia = sc.next();
+                System.out.print("Introduzca la hora de inicio(hh:mm): ");
+                LocalTime horaInicio = LocalTime.parse(sc.next() + ":00");
+                
+                ClaseDia clase  = new ClaseDia(horaInicio,null,dia,0,idClase,"","");
+                usuarioDAO.cancelarReserva(usuario.getDni(), clase);
+            }
+            catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+            catch(InputMismatchException e){
+                System.err.println(e.getMessage());
+            }
+        }
     }
     
     private static void menuClasesAdmin(){
@@ -534,6 +566,7 @@ public class Principal {
             try{
                 System.out.print("Introduzca el dni del cliente: ");
                 String dni = sc.next();
+                usuarioDAO.cancelarTodasReservasUsuario(dni);
                 usuarioDAO.eliminarUsuario(dni);
             }
             catch(SQLException e){
@@ -544,6 +577,7 @@ public class Principal {
             }
         }else{
             try{
+                usuarioDAO.cancelarTodasReservasUsuario(usuario.getDni());
                 usuarioDAO.eliminarUsuario(usuario.getDni());
                 salida = true;
             }
@@ -616,15 +650,20 @@ public class Principal {
     private static void mostrarHorariosClases(){
         try{
             ArrayList<ArrayList<ClaseDia>> semana = claseDAO.extraerClasesPorDia();
+            int contador = 0;
             
             for(int i = 0; i < semana.size(); i++){
                 ArrayList<ClaseDia> dia = semana.get(i); 
                 if(!dia.isEmpty()){
                     System.out.println(dia.get(0).getDiaSemana());
+                    contador++;
                 }
                 for(int j = 0; j < dia.size(); j++){
                    System.out.println(dia.get(j).toString());        
                 }
+            }
+            if(contador > 0){
+                System.out.println("No hay ninguna clase programada");
             }
         }
         catch(SQLException e){

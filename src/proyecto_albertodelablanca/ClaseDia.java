@@ -57,7 +57,11 @@ public class ClaseDia extends Clase {
 
     @Override
     public String toString() {
-        return "idClase: " + super.getIdClase() + " nombre: " + super.getNombre() + " Hora de inicio: " + this.getInicioClase() + " Hora de finalizacion: " + this.getFinalClase() + " Plazas: " + this.getPlazas();
+        if(this.finalClase != null){
+            return "idClase: " + super.getIdClase() + " nombre: " + super.getNombre() + " Hora de inicio: " + this.getInicioClase() + " Hora de finalizacion: " + this.getFinalClase() + " Plazas: " + this.getPlazas();
+        }else{
+            return "idClase: " + super.getIdClase() + " nombre: " + super.getNombre() + " Hora de inicio: " + this.getInicioClase();
+        }
     }
     
     
