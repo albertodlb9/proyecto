@@ -26,16 +26,16 @@ public class Principal {
     private static Calendario calendario = new Calendario();
     private static DiaDAO diaDAO = new DiaDAO(conexion);
     private static ClaseDAO claseDAO = new ClaseDAO(conexion);
-    private static Usuario usuarioActual;
+    
     
     public static void main(String[] args) {  
         primeraConexion();
         menuInicial();  
     }
     
-    public static void menuAdmin(){
+    public static void menuAdmin(Usuario usuario){
         System.out.println("********************************");
-        System.out.println("Bienvenido " + usuarioActual.getNombre() + " " + usuarioActual.getApellidos() + " al sistema de gestion del gimnasio");
+        System.out.println("Bienvenido " + usuario.getNombre() + " " + usuario.getApellidos() + " al sistema de gestion del gimnasio");
         int opcion = 0;
         do{
             System.out.println("********************************");
@@ -60,7 +60,7 @@ public class Principal {
                         break;
                     }
                     case 3:{
-                        eliminarCliente();
+                        eliminarCliente(usuario);
                         break;
                     }
                     case 4:{
@@ -68,7 +68,7 @@ public class Principal {
                         break;
                     }
                     case 5:{
-                        actualizarUsuario();
+                        actualizarUsuario(usuario);
                         break;
                     }
                     case 6:{
@@ -85,11 +85,11 @@ public class Principal {
         }while(opcion != 6);
     }
     
-    private static void menuUsuario(){
+    private static void menuUsuario(Usuario usuario){
         int opcion = 0;
         do{
             System.out.println("********************************");
-            System.out.println("Bienvenido " + usuarioActual.getNombre() + " " + usuarioActual.getApellidos() + "!");
+            System.out.println("Bienvenido " + usuario.getNombre() + " " + usuario.getApellidos() + "!");
             System.out.println("-----------------MENU-----------------");
             System.out.println("1. Mostrar tus datos");
             System.out.println("2. Actualizar tus datos");
@@ -102,19 +102,19 @@ public class Principal {
                 
                 switch(opcion){
                     case 1:{
-                        mostrarInformacionCliente();
+                        mostrarInformacionCliente(usuario);
                         break;
                     }
                     case 2:{
-                        actualizarUsuario();
+                        actualizarUsuario(usuario);
                         break;
                     }
                     case 3:{
-                        menuClasesCliente();
+                        menuClasesCliente(usuario);
                         break;
                     }
                     case 4:{
-                        if(eliminarCliente()){
+                        if(eliminarCliente(usuario)){
                             opcion = 5;
                         }
                         break;
@@ -135,11 +135,11 @@ public class Principal {
         }while(opcion != 5);   
     }
     
-    private static void mostrarInformacionCliente(){
-        System.out.println(usuarioActual.toString());
+    private static void mostrarInformacionCliente(Usuario usuario){
+        System.out.println(usuario.toString());
     }
     
-    private static void menuClasesCliente(){
+    private static void menuClasesCliente(Usuario usuario){
         System.out.println("**************************");
         int opcion = 0;
         do{           
@@ -159,7 +159,7 @@ public class Principal {
                         break;
                     }
                     case 2:{
-                        mostrarMisReservas();
+                        mostrarMisReservas(usuario);
                         break;
                     }
                     case 3:{
@@ -167,11 +167,11 @@ public class Principal {
                         break;
                     }
                     case 4:{
-                        reservarClase();
+                        reservarClase(usuario);
                         break;
                     }
                     case 5:{
-                        eliminarReserva();
+                        eliminarReserva(usuario);
                         break;
                     }
                     case 6:{
@@ -189,10 +189,10 @@ public class Principal {
         }while(opcion != 6);
     }
     
-    private static boolean mostrarMisReservas(){
+    private static boolean mostrarMisReservas(Usuario usuario){
         boolean resultado = false;
         try{
-            ArrayList<ClaseDia> clases = usuarioDAO.extraerReservasPorDni(usuarioActual.getDni());
+            ArrayList<ClaseDia> clases = usuarioDAO.extraerReservasPorDni(usuario.getDni());
             String dia = "";
             int contador = 0;
             
@@ -221,7 +221,7 @@ public class Principal {
         return resultado;
     }
     
-    private static void reservarClase(){
+    private static void reservarClase(Usuario usuario){
         try{
             System.out.println("A continuacion se muestran las clases disponibles para hacer una reserva:");
             mostrarHorariosClases();
@@ -234,7 +234,7 @@ public class Principal {
             LocalTime horaInicio = LocalTime.parse(sc.next() + ":00");
             
             ClaseDia clase  = new ClaseDia(horaInicio,null,dia,0,idClase,"","");
-            usuarioDAO.realizarReserva(usuarioActual.getDni(), clase);
+            usuarioDAO.realizarReserva(usuario.getDni(), clase);
         }
         catch(SQLException e){
             System.err.println(e.getMessage());
@@ -244,9 +244,9 @@ public class Principal {
         }
     }
     
-    private static void eliminarReserva(){
+    private static void eliminarReserva(Usuario usuario){
         System.out.println("A continuacion se muestran sus reservas:");
-        if(mostrarMisReservas()){
+        if(mostrarMisReservas(usuario)){
             System.out.println("************************");
             try{
                 System.out.print("Introduzca el id de la clase: ");
@@ -257,7 +257,7 @@ public class Principal {
                 LocalTime horaInicio = LocalTime.parse(sc.next() + ":00");
                 
                 ClaseDia clase  = new ClaseDia(horaInicio,null,dia,0,idClase,"","");
-                usuarioDAO.cancelarReserva(usuarioActual.getDni(), clase);
+                usuarioDAO.cancelarReserva(usuario.getDni(), clase);
             }
             catch(SQLException e){
                 System.err.println(e.getMessage());
@@ -450,11 +450,10 @@ public class Principal {
 
                     Usuario usuario = usuarioDAO.obtenerUsuarioPorNickname(nickname);
                     if(password.equals(usuario.getPassword())){
-                        usuarioActual = usuario;
                         if(usuario.getTipo().equals("admin")){
-                            menuAdmin();
+                            menuAdmin(usuario);
                         } else{
-                            menuUsuario();
+                            menuUsuario(usuario);
                         }
                          salida = false;
                     } else{
@@ -528,7 +527,7 @@ public class Principal {
         }
     }
     
-    private static void actualizarUsuario(){
+    private static void actualizarUsuario(Usuario usuario){
         try{
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -550,7 +549,7 @@ public class Principal {
             System.out.print("Numero de cuenta bancaria: ");
             String cuentaBancaria = sc.next();
 
-            Usuario usuarioActualizado = new Usuario(usuarioActual.getDni(),nombre,apellidos,email,LocalDate.parse(fechaNacimiento,formatter),sexo,telefono,direccion,cuentaBancaria,usuarioActual.getTipo(),usuarioActual.getNickname(),usuarioActual.getPassword());
+            Usuario usuarioActualizado = new Usuario(usuario.getDni(),nombre,apellidos,email,LocalDate.parse(fechaNacimiento,formatter),sexo,telefono,direccion,cuentaBancaria,usuario.getTipo(),usuario.getNickname(),usuario.getPassword());
             usuarioDAO.actualizarUsuario(usuarioActualizado);
         }
         catch(SQLException e){
@@ -558,9 +557,9 @@ public class Principal {
         }
     }
     
-    private static boolean eliminarCliente(){
+    private static boolean eliminarCliente(Usuario usuario){
         boolean salida = false;
-        if(usuarioActual.getTipo().equals("admin")){
+        if(usuario.getTipo().equals("admin")){
             try{
                 System.out.print("Introduzca el dni del cliente: ");
                 String dni = sc.next();
@@ -575,8 +574,8 @@ public class Principal {
             }
         }else{
             try{
-                usuarioDAO.cancelarTodasReservasUsuario(usuarioActual.getDni());
-                usuarioDAO.eliminarUsuario(usuarioActual.getDni());
+                usuarioDAO.cancelarTodasReservasUsuario(usuario.getDni());
+                usuarioDAO.eliminarUsuario(usuario.getDni());
                 salida = true;
             }
             catch(SQLException e){
